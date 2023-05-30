@@ -1,12 +1,9 @@
 import './App.css';
+import Home from './components/home/Home.js';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        AArambikkalaangala...
-      </header>
-    </div>
+    <Home/>
   );
 }
 
