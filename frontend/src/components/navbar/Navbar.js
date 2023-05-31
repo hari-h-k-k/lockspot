@@ -17,15 +17,15 @@ const Navbar = () => {
         </Text>
   
         {/* Centered Menu Buttons */}
-        <Flex justify="center" width="full" align="center">
+        <Flex justify="center"  align="center">
           <Button colorScheme="teal" mr={2}>
-            Menu 1
+             Venues
           </Button>
           <Button colorScheme="teal" mr={2}>
-            Menu 2
+            Events
           </Button>
           <Button colorScheme="teal" mr={2}>
-            Menu 3
+          Accessories
           </Button>
         </Flex>
   
