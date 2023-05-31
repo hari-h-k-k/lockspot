@@ -1,0 +1,5 @@
+export const DIALOG_SIGN_IN_EMAIL = 'SIGN_IN_EMAIL'
+export const DIALOG_REGISTER_EMAIL = 'REGISTER_EMAIL'
+export const DIALOG_DEFAULT = 'DEFAULT'
+
+export const SHOW_LOG_IN = 'SHOW_LOG_IN'
