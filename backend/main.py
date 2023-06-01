@@ -182,6 +182,7 @@ def registerEmail():
     email = request.json.get('email')
     password = request.json.get('password')
     confirmPassword = request.json.get('confirmPassword')
+    userType = request.json.get('userType')
 
     db = get_db()
     cursor = db.cursor()
@@ -194,15 +195,15 @@ def registerEmail():
         return jsonify({'message': 'Passwords do not match'}), 400
 
     try:
-        query = "INSERT INTO users (email, password) VALUES (%s, %s)"
-        values = (email, password)
+        query = "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)"
+        values = (email, password,userType)
         cursor.execute(query, values)
         db.commit()
         cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
         result = cursor.fetchone()
         access_token = create_access_token(identity=email)
         return jsonify(
-            {'message': 'User registered successfully', 'token': access_token, 'id': result[0], 'email': result[1]})
+            {'message': 'User registered successfully', 'token': access_token, 'id': result[0], 'email': result[1], 'userType': result[3]})
 
     except Exception as e:
         return jsonify({'message': 'Error registering user', 'error': str(e)}), 500
