@@ -7,6 +7,7 @@ const Navbar = () => {
   const userDetails = useSelector(state => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  console.log("userdetails="+userDetails.email)
   return (
     <Flex
       as="nav"
@@ -39,13 +40,11 @@ const Navbar = () => {
 
       {/* Login Button */}
       {userDetails.loginState ?
-        <div><Text fontSize="xl" fontWeight="bold">
-          Welcome, {userDetails.email}
-        </Text>
+        <div>
           {/* <Button colorScheme="red">Account</Button> */}
           <Menu>
             <MenuButton as={Button} colorScheme="red">
-              Account
+            {userDetails.email}
             </MenuButton>
             <MenuList minW="150px" p={2} color="black">
               <MenuItem fontSize="sm" _hover={{ bg: "teal.100" }} onClick={() => navigate("/profile")}>My Account</MenuItem>

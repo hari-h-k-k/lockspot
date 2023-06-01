@@ -1,29 +1,34 @@
-import { Box,Text, Button, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Box, Flex, Input, InputGroup, InputLeftElement, InputRightElement, IconButton } from "@chakra-ui/react";
+import { SearchIcon, MoonIcon, LockIcon } from "@chakra-ui/icons";
 
-function MyMenu() {
-    return (
-      <div style={{ display: "flex", alignItems: "center" }}>
-      <Text fontSize="xl" fontWeight="bold" mr={4}>
-        Welcome, email
-      </Text>
-      <Menu>
-        <MenuButton
-          as={Button}
-          colorScheme="red"
-          size="sm"
-          variant="outline"
-          _hover={{ bg: "red.500", color: "white" }}
-        >
-          Account
-        </MenuButton>
-        <MenuList minW="150px" p={2} color="black">
-          <MenuItem _hover={{ bg: "teal.100" }}>Item 1</MenuItem>
-          <MenuItem _hover={{ bg: "teal.100" }}>Item 2</MenuItem>
-          <MenuItem _hover={{ bg: "teal.100" }}>Item 3</MenuItem>
-        </MenuList>
-      </Menu>
-    </div>
-    );
-  }
+function SearchBox() {
+  return (
+    <Flex justifyContent="center" alignItems="center" height="100vh">
+      <Box width="400px" bg="orange" borderRadius="full" boxShadow="md" overflow="hidden">
+        <Flex>
+          <InputGroup flex="1" borderColor="gray.200" borderRightWidth="1px">
+            <InputLeftElement pointerEvents="none" children={<MoonIcon color="gray.400" />} />
+          </InputGroup>
+          <InputGroup flex="3">
+            <Input placeholder="Search" />
+          </InputGroup>
+          <InputGroup flex="1" borderColor="gray.200" borderLeftWidth="1px">
+            <InputRightElement pointerEvents="none" children={<LockIcon color="gray.400" />} />
+          </InputGroup>
+        </Flex>
+        <Box height="2px" bg="gray.200" />
+        <Flex justifyContent="center" py={2}>
+          <IconButton
+            aria-label="Search"
+            icon={<SearchIcon />}
+            colorScheme="teal"
+            borderRadius="full"
+            boxShadow="md"
+          />
+        </Flex>
+      </Box>
+    </Flex>
+  );
+}
 
-export default MyMenu;
+export default SearchBox;
