@@ -1,0 +1,37 @@
+/backend/.idea/vcs.xml
+/backend/.idea/inspectionProfiles/Project_Default.xml
+/backend/.idea/misc.xml
+/backend/.idea/inspectionProfiles/profiles_settings.xml
+/backend/.idea/modules.xml
+/backend/.idea/backend.iml
+/backend/.idea/workspace.xml
+
+/frontend/node_modules
+/frontend/.pnp
+/frontend.pnp.js
+
+# testing
+/frontend/coverage
+
+# production
+/frontend/build
+# Default ignored files
+/frontend/shelf/
+/frontend/workspace.xml
+# Editor-based HTTP Client requests
+/frontend/httpRequests/
+
+# misc
+/frontend .DS_Store
+/frontend .env.local
+/frontend .env.development.local
+/frontend .env.test.local
+/frontend .env.production.local
+
+/frontend npm-debug.log*
+/frontend yarn-debug.log*
+/frontend yarn-error.log*
+/frontend/.idea/vcs.xml
+/frontend/.idea/modules.xml
+/frontend/.idea/frontend.iml
+/frontend/.idea/workspace.xml
