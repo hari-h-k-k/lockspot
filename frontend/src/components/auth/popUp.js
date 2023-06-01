@@ -7,16 +7,19 @@ import SignInEmail from './SignInEmail.js';
 import { showLogIn } from "../../redux/dispatchers/DialogDispatcher.js";
 import { DIALOG_SIGN_IN_EMAIL, DIALOG_REGISTER_EMAIL, DIALOG_DEFAULT } from '../../constants/strings/Strings.js';
 function PopUp() {
-    const [activeTab, setActiveTab] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
-
+    const [userType, setUserType] = useState('user');
+    const [activeTab, setActiveTab] = useState(0);
     const dialogSelector = useSelector(state => state.dialogSelector);
     const dispatch = useDispatch();
     const handleClose = () => {
         dispatch(showLogIn(DIALOG_DEFAULT));
         setIsOpen(false);
     };
-
+    const handleRadio = (value) => {
+        setUserType(value);
+      };
+    
     return (
         <>
             <Button colorScheme="red" onClick={() => setIsOpen(true)}>Login</Button>
@@ -28,7 +31,7 @@ function PopUp() {
                         <ModalCloseButton />
 
                         <ModalBody>
-                            <RadioGroup defaultValue="user">
+                            <RadioGroup value={userType} onChange={handleRadio}>
                                 <HStack spacing={4}>
                                     <Radio value="user">User</Radio>
                                     <Radio value="owner">Owner</Radio>
@@ -76,9 +79,9 @@ function PopUp() {
 
 
                 ) : dialogSelector === DIALOG_SIGN_IN_EMAIL ? (
-                    <SignInEmail />
+                    <SignInEmail userType={userType} handleClose={handleClose}/>
                 ) : dialogSelector === DIALOG_REGISTER_EMAIL ? (
-                    <RegisterEmail />
+                    <RegisterEmail userType={userType} handleClose={handleClose}/>
                     // <RegisterEmail userType={userType} setUserType={setUserType}/>
                 ) : null}
             </Modal>
