@@ -31,12 +31,7 @@ function PopUp() {
                         <ModalCloseButton />
 
                         <ModalBody>
-                            <RadioGroup value={userType} onChange={handleRadio}>
-                                <HStack spacing={4}>
-                                    <Radio value="user">User</Radio>
-                                    <Radio value="owner">Owner</Radio>
-                                </HStack>
-                            </RadioGroup>
+                            
                             <Tabs justifyContent='center' variant="enclosed" index={activeTab} onChange={(index) => setActiveTab(index)}>
                                 <TabList>
                                     <Tab _selected={{ bg: "blue.500", color: "white" }}>SignIn</Tab>
@@ -81,7 +76,7 @@ function PopUp() {
                 ) : dialogSelector === DIALOG_SIGN_IN_EMAIL ? (
                     <SignInEmail userType={userType} handleClose={handleClose}/>
                 ) : dialogSelector === DIALOG_REGISTER_EMAIL ? (
-                    <RegisterEmail userType={userType} handleClose={handleClose}/>
+                    <RegisterEmail handleClose={handleClose}/>
                     // <RegisterEmail userType={userType} setUserType={setUserType}/>
                 ) : null}
             </Modal>
