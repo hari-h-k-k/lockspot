@@ -1,0 +1,21 @@
+#searchbar {
+    background: #e8eeee;
+    width: 40%;
+    margin-top: 300px;
+    color: #030b1a;
+    border-radius: 10px;
+}
+
+#searchbar_id {
+    text-align: -webkit-center;
+}
+
+.turfGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+}
+
+.unitTurf {
+    width: min-content;
+}

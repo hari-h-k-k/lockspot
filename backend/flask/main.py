@@ -10,7 +10,7 @@ CORS(app)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'turf'
+app.config['MYSQL_DB'] = 'atlantis'
 app.config['MYSQL_PORT'] = 3306
 app.config['JWT_SECRET_KEY'] = 'your-secret-key'
 
@@ -25,7 +25,7 @@ def create_database():
         port=app.config['MYSQL_PORT']
     )
     cursor = db.cursor()
-    cursor.execute(f"CREATE DATABASE IF NOT EXISTS turf")
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS atlantis")
     db.commit()
     cursor.close()
     db.close()
@@ -39,6 +39,10 @@ def get_db():
         database=app.config['MYSQL_DB'],
         port=app.config['MYSQL_PORT']
     )
+    cursor = db.cursor()
+    cursor.execute("Use " + app.config['MYSQL_DB'])
+    db.commit()
+    cursor.close()
     return db
 
 
@@ -199,14 +203,15 @@ def registerEmail():
 
     try:
         query = "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)"
-        values = (email, password,userType)
+        values = (email, password, userType)
         cursor.execute(query, values)
         db.commit()
         cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
         result = cursor.fetchone()
         access_token = create_access_token(identity=email)
         return jsonify(
-            {'message': 'User registered successfully', 'token': access_token, 'id': result[0], 'email': result[1], 'userType': result[3]})
+            {'message': 'User registered successfully', 'token': access_token, 'id': result[0], 'email': result[1],
+             'userType': result[3]})
 
     except Exception as e:
         return jsonify({'message': 'Error registering user', 'error': str(e)}), 500
@@ -218,27 +223,32 @@ def getTurfs():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        'SELECT turfs.id, turfs.name, sports.name FROM turf.turfs JOIN turf.sports ON turfs.id = sports.turf_id WHERE '
-        'turfs.location = %s',
-        (location,))
+        "SELECT turfs.id, turfs.name, location, sports.name FROM turfs JOIN sports ON "
+        "turfs.id = sports.turf_id WHERE location LIKE %s",
+        ('%' + location + '%',))
     turfs = cursor.fetchall()
     cursor.close()
     db.close()
-    merged_turfs = {}
+    turfs_json = {}
 
     for turf in turfs:
         turf_id = turf[0]
-        turf_name = 'Turf ' + str(turf_id)
-        sport = turf[2]
+        turf_name = turf[1]
+        turf_location = turf[2]
+        sport = turf[3]
 
-        if turf_id not in merged_turfs:
-            merged_turfs[turf_id] = {'name': turf_name, 'sports': []}
+        if turf_id not in turfs_json:
+            turfs_json[turf_id] = {
+                'name': turf_name,
+                'sports': [],
+                'location': turf_location
+            }
 
-        merged_turfs[turf_id]['sports'].append(sport)
+        turfs_json[turf_id]['sports'].append(sport)
 
-    merged_turfs_json = json.dumps(merged_turfs)
+    turfs_json_str = json.dumps(turfs_json)
 
-    return merged_turfs_json
+    return turfs_json_str
 
 
 if __name__ == '__main__':

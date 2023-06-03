@@ -1,21 +1,21 @@
-import { useState } from "react";
+import {useState} from "react";
 import {
-  ChakraProvider,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Input,
-  Stack,
-  useToast
+    ChakraProvider,
+    Button,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    Input,
+    Stack,
+    useToast
 } from "@chakra-ui/react";
-import { useDispatch,useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {showLogIn} from "../../redux/dispatchers/DialogDispatcher.js";
-import {DIALOG_SIGN_IN_EMAIL,DIALOG_REGISTER_EMAIL,DIALOG_DEFAULT} from '../../constants/strings/Strings.js';
+import {DIALOG_SIGN_IN_EMAIL, DIALOG_REGISTER_EMAIL, DIALOG_DEFAULT} from '../../constants/strings/Strings.js';
 import axiosInstance from '../../Interceptor.js';
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
 
@@ -24,22 +24,22 @@ const SignInEmail = ({handleClose}) => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
-  const handleGoBack = () => {
-    dispatch(showLogIn(DIALOG_DEFAULT));
-  };
+    const handleGoBack = () => {
+        dispatch(showLogIn(DIALOG_DEFAULT));
+    };
 
-  const toast = useToast();
-  const showToast = (message) => {
-    toast({
-      title: "Registered",
-      description: message,
-      status: "success",
-      duration: 2000,
-      isClosable: true,
-    });
-  };
+    const toast = useToast();
+    const showToast = (message) => {
+        toast({
+            title: "Registered",
+            description: message,
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+        });
+    };
 
-  const handleSubmit = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const payload = {
@@ -65,8 +65,7 @@ const SignInEmail = ({handleClose}) => {
                     console.log('Invalid credentials!');
                 }
                 showToast(response.data.message);
-            }
-            else {
+            } else {
                 console.log('Request failed with status:', response.status);
             }
 
@@ -80,26 +79,27 @@ const SignInEmail = ({handleClose}) => {
 
     };
 
-  return (
-        <ModalContent>
-          <ModalHeader>Sign In</ModalHeader>
-          <ModalCloseButton />
+    return (
+        <>
+            <ModalHeader>Sign In</ModalHeader>
+            <ModalCloseButton/>
 
-          <ModalBody>
-            <Stack spacing={4}>
-              <Input placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)}/>
-              <Input placeholder="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)}/>
-            </Stack>
-          </ModalBody>
+            <ModalBody>
+                <Stack spacing={4}>
+                    <Input placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)}/>
+                    <Input placeholder="Password" type="password" value={password}
+                           onChange={(event) => setPassword(event.target.value)}/>
+                </Stack>
+            </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={handleGoBack}>
-              Back
-            </Button>
-            <Button colorScheme="teal" onClick={handleSubmit}>Sign In</Button>
-          </ModalFooter>
-        </ModalContent>
-  );
+            <ModalFooter>
+                <Button colorScheme="red" mr={3} onClick={handleGoBack}>
+                    Back
+                </Button>
+                <Button colorScheme="teal" onClick={handleSubmit}>Sign In</Button>
+            </ModalFooter>
+        </>
+    );
 };
 
 export default SignInEmail;
