@@ -10,19 +10,7 @@ function Profile() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     return (
-        <div style={{
-            // backgroundImage: `url(${BgImg})`,
-            backgroundColor:'green',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            overflow: 'auto',
-            maxHeight: '100vh',
-            height: '100vh',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontSize: '2rem'
-        }}>
+        <div className='homepage'>
             <Flex
                 as="nav"
                 align="center"

@@ -39,6 +39,10 @@ def get_db():
         database=app.config['MYSQL_DB'],
         port=app.config['MYSQL_PORT']
     )
+    cursor = db.cursor()
+    cursor.execute("Use " + app.config['MYSQL_DB'])
+    db.commit()
+    cursor.close()
     return db
 
 
@@ -219,27 +223,32 @@ def getTurfs():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        'SELECT turfs.id, turfs.name, sports.name FROM atlantis.turfs JOIN atlantis.sports ON turfs.id = sports.turf_id WHERE '
-        'turfs.location = %s',
-        (location,))
+        "SELECT turfs.id, turfs.name, location, sports.name FROM turfs JOIN sports ON "
+        "turfs.id = sports.turf_id WHERE location LIKE %s",
+        ('%' + location + '%',))
     turfs = cursor.fetchall()
     cursor.close()
     db.close()
-    merged_turfs = {}
+    turfs_json = {}
 
     for turf in turfs:
         turf_id = turf[0]
-        turf_name = 'Turf ' + str(turf_id)
-        sport = turf[2]
+        turf_name = turf[1]
+        turf_location = turf[2]
+        sport = turf[3]
 
-        if turf_id not in merged_turfs:
-            merged_turfs[turf_id] = {'name': turf_name, 'sports': []}
+        if turf_id not in turfs_json:
+            turfs_json[turf_id] = {
+                'name': turf_name,
+                'sports': [],
+                'location': turf_location
+            }
 
-        merged_turfs[turf_id]['sports'].append(sport)
+        turfs_json[turf_id]['sports'].append(sport)
 
-    merged_turfs_json = json.dumps(merged_turfs)
+    turfs_json_str = json.dumps(turfs_json)
 
-    return merged_turfs_json
+    return turfs_json_str
 
 
 if __name__ == '__main__':
