@@ -1,5 +1,5 @@
 import { Box, Flex, Spacer, Button, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import PopUp from '../auth/popUp.js';
+import PopUp from '../auth/PopUp.js';
 import { useNavigate } from "react-router-dom";
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
 import { useDispatch, useSelector } from 'react-redux';

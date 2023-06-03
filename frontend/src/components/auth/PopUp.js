@@ -5,6 +5,7 @@ import { Radio, RadioGroup, HStack } from "@chakra-ui/react";
 import RegisterEmail from './RegisterEmail.js';
 import SignInEmail from './SignInEmail.js';
 import { showLogIn } from "../../redux/dispatchers/DialogDispatcher.js";
+import "./PopUp.css"
 import { DIALOG_SIGN_IN_EMAIL, DIALOG_REGISTER_EMAIL, DIALOG_DEFAULT } from '../../constants/strings/Strings.js';
 function PopUp() {
     const [isOpen, setIsOpen] = useState(false);
@@ -25,15 +26,16 @@ function PopUp() {
             <Button colorScheme="red" onClick={() => setIsOpen(true)}>Login</Button>
             <Modal isOpen={isOpen} onClose={handleClose} size="xl">
                 <ModalOverlay />
+                <ModalContent class="dialogContent dialogBackground">
                 {dialogSelector === DIALOG_DEFAULT ? (
-                    <ModalContent>
+                    <>
                         <ModalHeader>Log In</ModalHeader>
                         <ModalCloseButton />
 
                         <ModalBody>
                             
-                            <Tabs justifyContent='center' variant="enclosed" index={activeTab} onChange={(index) => setActiveTab(index)}>
-                                <TabList>
+                            <Tabs variant="enclosed" index={activeTab} onChange={(index) => setActiveTab(index)}>
+                                <TabList justifyContent='center'>
                                     <Tab _selected={{ bg: "blue.500", color: "white" }}>SignIn</Tab>
                                     <Tab _selected={{ bg: "green.500", color: "white" }}>SignUp</Tab>
                                 </TabList>
@@ -70,8 +72,7 @@ function PopUp() {
                             </Button>
                             {/* <Button variant="ghost">Secondary Action</Button> */}
                         </ModalFooter>
-                    </ModalContent>
-
+                    </>
 
                 ) : dialogSelector === DIALOG_SIGN_IN_EMAIL ? (
                     <SignInEmail userType={userType} handleClose={handleClose}/>
@@ -79,6 +80,7 @@ function PopUp() {
                     <RegisterEmail handleClose={handleClose}/>
                     // <RegisterEmail userType={userType} setUserType={setUserType}/>
                 ) : null}
+                </ModalContent>
             </Modal>
         </>
 
