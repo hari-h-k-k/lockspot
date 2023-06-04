@@ -31,7 +31,7 @@ const SignInEmail = ({handleClose}) => {
     const toast = useToast();
     const showToast = (message) => {
         toast({
-            title: "Registered",
+            title: "LogIn Status",
             description: message,
             status: "success",
             duration: 2000,

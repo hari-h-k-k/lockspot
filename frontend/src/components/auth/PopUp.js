@@ -26,7 +26,7 @@ function PopUp() {
             <Button colorScheme="red" onClick={() => setIsOpen(true)}>Login</Button>
             <Modal isOpen={isOpen} onClose={handleClose} size="xl">
                 <ModalOverlay />
-                <ModalContent class="dialogContent dialogBackground">
+               <ModalContent >   {/* need fixing   ==> class="dialogContent dialogBackground"*/}
                 {dialogSelector === DIALOG_DEFAULT ? (
                     <>
                         <ModalHeader>Log In</ModalHeader>

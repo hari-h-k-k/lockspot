@@ -33,20 +33,11 @@
 
 // export default SearchBox;
 
-import { Box, Flex, Image, Text } from '@chakra-ui/react';
+// import { Box, Flex, Image, Text } from '@chakra-ui/react';
 
-function Card() {
-  return (
-    <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-      <Flex>
-        <Image src="/path/to/image.jpg" alt="Image" boxSize="200px" objectFit="cover" />
-        <Box p="4">
-          <Text fontSize="xl" fontWeight="bold">John Doe</Text>
-          <Text fontSize="md" color="gray.500">Location: New York</Text>
-          <Text fontSize="md" color="gray.500">Rating: 4.5</Text>
-        </Box>
-      </Flex>
-    </Box>
-  );
-}
-export default Card;
+// function Card() {
+//   return (
+    
+//   );
+// }
+// export default Card;
