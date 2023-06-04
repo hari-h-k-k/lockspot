@@ -20,8 +20,9 @@ function Profile() {
                 bg="transparent"
             >
                 {/* Logo */}
-                <Text fontSize="xl" fontWeight="bold">
-                    <a href="/">Lockspot</a>
+                <Text fontSize="xl" fontWeight="bold" onClick={() => {navigate("/")}} _hover={{ cursor: 'pointer' }}>
+                Lockspot
+                    {/* <a href="/">Lockspot</a> */}
                 </Text>
 
                 {/* <Spacer /> */}
@@ -29,7 +30,9 @@ function Profile() {
                 {/* Login Button */}
                 <div>
                     {/* <Button colorScheme="red">Account</Button> */}
-                    <Button colorScheme="red" mr={2} onClick={() => dispatch(UserDispatch("", 'clear'))}>
+                    <Button colorScheme="red" mr={2} onClick={() => {dispatch(UserDispatch("", 'clear'));
+                                                                    navigate("/")
+                                                                    }}>
                         Log Out
                     </Button>
                 </div>

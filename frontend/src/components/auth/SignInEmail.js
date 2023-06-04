@@ -19,10 +19,10 @@ import {DIALOG_SIGN_IN_EMAIL, DIALOG_REGISTER_EMAIL, DIALOG_DEFAULT} from '../..
 import axiosInstance from '../../Interceptor.js';
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
 
-const SignInEmail = (handleClose) => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const dispatch = useDispatch();
+const SignInEmail = ({handleClose}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
     const handleGoBack = () => {
         dispatch(showLogIn(DIALOG_DEFAULT));
@@ -31,7 +31,7 @@ const SignInEmail = (handleClose) => {
     const toast = useToast();
     const showToast = (message) => {
         toast({
-            title: "Registered",
+            title: "LogIn Status",
             description: message,
             status: "success",
             duration: 2000,
