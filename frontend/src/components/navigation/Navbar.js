@@ -8,7 +8,7 @@ const Navbar = () => {
     const userDetails = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    console.log("userdetails=" + userDetails.email)
+    // console.log("userdetails=" + JSON.stringify(userDetails))
     return (
         <Flex
             as="nav"
@@ -16,7 +16,9 @@ const Navbar = () => {
             justify="space-between"
             wrap="wrap"
             padding={4}
-            bg="transparent"
+            bg="rgba(0, 0, 0, 0.4)"
+            // _hover={{ bg: "rgba(0, 0, 0, 0.4)" }}
+            // bg="transparent"
         >
             {/* Logo */}
             <Text fontSize="xl" fontWeight="bold">

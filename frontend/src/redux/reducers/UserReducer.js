@@ -3,6 +3,7 @@ const initialState = {
     email: "",
     userId: "",
     userName: "",
+    userType: "",
     loginState: false
 };
 
