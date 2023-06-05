@@ -177,7 +177,7 @@ def signInEmail():
         if password == db_password:
             access_token = create_access_token(identity=email)
             return jsonify(
-                {'message': 'Credentials match!', 'token': access_token, 'id': result[0], 'email': result[1]})
+                {'message': 'Credentials match!', 'token': access_token, 'id': result[0], 'email': result[1],'userType': result[3]})
         else:
             return jsonify({'message': 'Incorrect password!'})
     else:
@@ -251,6 +251,29 @@ def getTurfs():
     return turfs_json_str
 
 
+# @app.route('/addVenue', methods=['POST'])
+# def addVenue():
+#     ownerId = request.json.get('ownerId')
+#     location = request.json.get('location')
+#     name = request.json.get('name')
+#     sports= request.json.get('sports')
+
+#     db = get_db()
+#     cursor = db.cursor()
+#     cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+#     result = cursor.fetchone()
+
+#     try:
+#         query = "INSERT INTO turfs (name, owner_id, location,created_at) VALUES (%s, %s, %s, %s)"
+#         values = (name, ownerId, location, "  ")
+#         cursor.execute(query, values)
+#         db.commit()
+#         return jsonify(
+#             {'message': 'Venue added successfully'})
+
+#     except Exception as e:
+#         return jsonify({'message': 'Error adding venue', 'error': str(e)}), 500
+    
 if __name__ == '__main__':
     create_database()
     create_tables()

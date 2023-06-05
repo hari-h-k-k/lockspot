@@ -8,7 +8,7 @@ const Navbar = () => {
     const userDetails = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    console.log("userdetails=" + userDetails.email)
+    // console.log("userdetails=" + JSON.stringify(userDetails))
     return (
         <Flex
             as="nav"
