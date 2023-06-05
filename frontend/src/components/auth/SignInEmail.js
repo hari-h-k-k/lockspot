@@ -1,28 +1,15 @@
 import {useState} from "react";
-import {
-    ChakraProvider,
-    Button,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    Input,
-    Stack,
-    useToast
-} from "@chakra-ui/react";
-import {useDispatch, useSelector} from 'react-redux';
+import {Button, Input, ModalBody, ModalCloseButton, ModalFooter, ModalHeader, Stack, useToast} from "@chakra-ui/react";
+import {useDispatch} from 'react-redux';
 import {showLogIn} from "../../redux/dispatchers/DialogDispatcher.js";
-import {DIALOG_SIGN_IN_EMAIL, DIALOG_REGISTER_EMAIL, DIALOG_DEFAULT} from '../../constants/strings/Strings.js';
+import {DIALOG_DEFAULT} from '../../constants/strings/Strings.js';
 import axiosInstance from '../../Interceptor.js';
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
 
 const SignInEmail = ({handleClose}) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
 
     const handleGoBack = () => {
         dispatch(showLogIn(DIALOG_DEFAULT));
@@ -31,7 +18,7 @@ const SignInEmail = ({handleClose}) => {
     const toast = useToast();
     const showToast = (message) => {
         toast({
-            title: "LogIn Status",
+            title: "Log in Status",
             description: message,
             status: "success",
             duration: 2000,

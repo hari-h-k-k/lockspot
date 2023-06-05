@@ -2,8 +2,8 @@ import './App.css';
 import { Button, Center,Flex } from "@chakra-ui/react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Home from './components/home/Home.js';
-import ChatGPT from './chatGPT.js';
 import Profile from './components/profile/Profile.js';
+import TurfOverview from "./components/turf/TurfOverview";
 import { useSelector } from 'react-redux';
 
 function App() {
@@ -16,6 +16,7 @@ function App() {
                     <Route path="/events" element={<div>Events page</div>} />
                     <Route path="/accessories" element={<div>Accessories page</div>} />
                     <Route path="/profile" element={<PrivateRoute component={Profile} />} />
+                    <Route path="/turfOverview" element={<TurfOverview/>}/>
                 </Routes>
             </BrowserRouter>
             {/* <ChatGPT/>  */}
