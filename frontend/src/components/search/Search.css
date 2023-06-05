@@ -9,13 +9,3 @@
 #searchbar_id {
     text-align: -webkit-center;
 }
-
-.turfGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 20px;
-}
-
-.unitTurf {
-    width: min-content;
-}
