@@ -16,7 +16,9 @@ const Navbar = () => {
             justify="space-between"
             wrap="wrap"
             padding={4}
-            bg="transparent"
+            bg="rgba(0, 0, 0, 0.4)"
+            // _hover={{ bg: "rgba(0, 0, 0, 0.4)" }}
+            // bg="transparent"
         >
             {/* Logo */}
             <Text fontSize="xl" fontWeight="bold">

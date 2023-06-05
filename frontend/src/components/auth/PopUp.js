@@ -17,9 +17,6 @@ function PopUp() {
         dispatch(showLogIn(DIALOG_DEFAULT));
         setIsOpen(false);
     };
-    const handleRadio = (value) => {
-        setUserType(value);
-      };
     
     return (
         <>
