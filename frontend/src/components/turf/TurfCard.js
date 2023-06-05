@@ -4,15 +4,13 @@ import {Box, Flex, Image, Text,} from "@chakra-ui/react";
 import "./Turf.css"
 import dummyImg from "../../assets/images/Thumbnail1.avif";
 
-function TurfCard({name, sports, location, handleCardClick}) {
-
-    const handleClick = () => {
-
-        handleCardClick();
+function TurfCard({name, sports, location, handleCardClick, turfKey}) {
+    const handleClick = (turfKey) => {
+        handleCardClick(turfKey);
     };
 
     return (
-        <Box maxW="md" borderWidth="1px" borderRadius="lg" overflow="hidden" onClick={handleClick}>
+        <Box maxW="md" borderWidth="1px" borderRadius="lg" overflow="hidden" onClick={() => handleClick({turfKey})}>
             <Flex>
                 <Image src={dummyImg} alt="Image" boxSize="40%" objectFit="contain"/>
                 <Box p="4">

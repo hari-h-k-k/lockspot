@@ -5,12 +5,14 @@ import {Container, Grid, Heading, useToast} from "@chakra-ui/react";
 
 import "./Turf.css"
 import {useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
 
 function TurfSpace({turfLocation}) {
 
     const [turfList, setTurfList] = useState({});
     const userDetails = useSelector(state => state.user);
     const toast = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
         axiosInstance({
@@ -30,11 +32,7 @@ function TurfSpace({turfLocation}) {
         });
     }, [turfLocation]);
 
-    // useEffect(() => {
-    // console.log(turfList)
-    // }, [turfList]);
-
-    const handleCardClick = () => {
+    const handleCardClick = (turfKey) => {
         if (!userDetails.loginState) {
             toast({
                 title: "Log in Status",
@@ -44,7 +42,8 @@ function TurfSpace({turfLocation}) {
                 isClosable: true,
             });
         } else {
-            // Handle turf card click
+            console.log("Clicked on", turfKey)
+            navigate('/turfOverview', {state: {turfKey}});
         }
     };
 
@@ -62,10 +61,12 @@ function TurfSpace({turfLocation}) {
                     {turfList &&
                         Object.keys(turfList).map((key) => {
                             const turf = turfList[key];
+                            console.log(key)
+                            console.log(turfList)
                             const {name, sports, location} = turf;
                             return (
                                 <TurfCard name={name} sports={sports} location={location}
-                                          handleCardClick={handleCardClick}/>
+                                          handleCardClick={handleCardClick} turfKey={key}/>
                             );
                         })}
 
