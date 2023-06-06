@@ -6,13 +6,17 @@ import reportWebVitals from './reportWebVitals';
 import {Provider} from "react-redux";
 import store from './redux/store';
 import { ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const queryClient = new QueryClient();
 root.render(
   <React.StrictMode>
     <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
       <ChakraProvider>
         <App />
       </ChakraProvider>
+      </QueryClientProvider>
     </Provider>
   </React.StrictMode>
 );

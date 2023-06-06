@@ -239,6 +239,7 @@ def getTurfs():
 
         if turf_id not in turfs_json:
             turfs_json[turf_id] = {
+                'id':turf_id,
                 'name': turf_name,
                 'sports': [],
                 'location': turf_location

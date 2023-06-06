@@ -1,25 +1,17 @@
-import {Box, Flex, Spacer, Button, Text, Menu, MenuButton, MenuList, MenuItem} from "@chakra-ui/react";
+import { Box, Flex, Spacer, Button, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import PopUp from '../auth/PopUp.js';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Navbar = () => {
-    const userDetails = useSelector(state => state.user);
+    // const userDetails = useSelector(state => state.user);
+    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
     const navigate = useNavigate();
     const dispatch = useDispatch();
     // console.log("userdetails=" + JSON.stringify(userDetails))
     return (
-        <Flex
-            as="nav"
-            align="center"
-            justify="space-between"
-            wrap="wrap"
-            padding={4}
-            bg="rgba(0, 0, 0, 0.4)"
-            // _hover={{ bg: "rgba(0, 0, 0, 0.4)" }}
-            // bg="transparent"
-        >
+        <Flex {...styles.navFlex}>
             {/* Logo */}
             <Text fontSize="xl" fontWeight="bold">
                 <a href="/">Lockspot</a>
@@ -27,13 +19,13 @@ const Navbar = () => {
 
             {/* Centered Menu Buttons */}
             <Flex justify="center" align="center">
-                <Button colorScheme="teal" mr={2} onClick={() => navigate("/venues")}>
+                <Button {...styles.menuButton} onClick={() => navigate("/venues")}>
                     Venues
                 </Button>
-                <Button colorScheme="teal" mr={2} onClick={() => navigate("/events")}>
+                <Button {...styles.menuButton} onClick={() => navigate("/events")}>
                     Events
                 </Button>
-                <Button colorScheme="teal" mr={2} onClick={() => navigate("/accessories")}>
+                <Button {...styles.menuButton} onClick={() => navigate("/accessories")}>
                     Accessories
                 </Button>
             </Flex>
@@ -42,7 +34,7 @@ const Navbar = () => {
             {/* <Spacer /> */}
 
             {/* Login Button */}
-            {userDetails.loginState ?
+            {userDetails.token ?
                 <div>
                     {/* <Button colorScheme="red">Account</Button> */}
                     <Menu>
@@ -50,16 +42,34 @@ const Navbar = () => {
                             {userDetails.email}
                         </MenuButton>
                         <MenuList minW="150px" p={2} color="black">
-                            <MenuItem fontSize="sm" _hover={{bg: "teal.100"}} onClick={() => navigate("/profile")}>My
+                            <MenuItem fontSize="sm" _hover={{ bg: "teal.100" }} onClick={() => navigate("/profile")}>My
                                 Account</MenuItem>
-                            <MenuItem fontSize="sm" _hover={{bg: "teal.100"}}
-                                      onClick={() => dispatch(UserDispatch("", 'clear'))}>Logout</MenuItem>
+                            <MenuItem fontSize="sm" _hover={{ bg: "teal.100" }}
+                                onClick={() =>{dispatch(UserDispatch("", 'clear')); sessionStorage.removeItem('userDetails');window.location.reload();} }>Logout</MenuItem>
                         </MenuList>
                     </Menu>
                 </div>
-                : <PopUp/>}
+                : <PopUp />}
         </Flex>
     );
 };
 
 export default Navbar;
+
+const styles = {
+    navFlex: {
+        as: "nav",
+        align: "center",
+        justify: "space-between",
+        wrap: "wrap",
+        padding: 4,
+        bg: "rgba(0, 0, 0, 0.4)",
+        // _hover:{{ bg: "rgba(0, 0, 0, 0.4)" }},
+        // bg:"transparent"
+    },
+    menuButton: {
+        colorScheme: 'teal',
+        mr: 2,
+        _hover: { bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' },
+    },
+};

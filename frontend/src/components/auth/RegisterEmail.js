@@ -67,6 +67,8 @@ const RegEmail = ({handleClose}) => {
             const response = responseData;
             console.log(response);
             if (response.statusText) {
+                sessionStorage.setItem('userDetails', JSON.stringify(response.data));
+                window.location.reload();
                 dispatch(UserDispatch(response.data, 'edit'));
                 showToast(response.data.message);
                 // toast(response.data.message, {
