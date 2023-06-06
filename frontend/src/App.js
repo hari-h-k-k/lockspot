@@ -7,6 +7,18 @@ import TurfOverview from "./components/turf/TurfOverview";
 import { useSelector } from 'react-redux';
 
 function App() {
+    const userDetails =JSON.parse(sessionStorage.getItem('userDetails')) ;
+    if(userDetails==null){
+        const user= {
+            token: null,
+            email: "",
+            userId: "",
+            userName: "",
+            userType: "",
+            loginState: false
+        };
+        sessionStorage.setItem('userDetails', JSON.stringify(user));
+    };
     return (
         <>
             <BrowserRouter>
@@ -25,11 +37,12 @@ function App() {
 };
 
 function PrivateRoute({ component: Component }) {
-    const userDetails = useSelector(state => state.user);
-    const isAuthenticated = userDetails.loginState;
+    // const userDetails = useSelector(state => state.user);
+    const userDetails =JSON.parse(sessionStorage.getItem('userDetails')) ;
+    const token = userDetails.token;
     const navigate = useNavigate();
     return (
-        isAuthenticated ? (
+        token ? (
             <Component />
         ) : (
             <>

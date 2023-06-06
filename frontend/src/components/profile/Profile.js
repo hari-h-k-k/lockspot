@@ -8,7 +8,8 @@ import OwnerProfile from "./OwnerProfile.js";
 import UserProfile from "./UserProfile.js";
 
 function Profile() {
-    const userDetails = useSelector(state => state.user);
+    // const userDetails = useSelector(state => state.user);
+    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
     const navigate = useNavigate();
     const dispatch = useDispatch();
     return (
@@ -37,7 +38,8 @@ function Profile() {
 };
 
 function ProfileNav() {
-    const userDetails = useSelector(state => state.user);
+    // const userDetails = useSelector(state => state.user);
+    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
     const navigate = useNavigate();
     const dispatch = useDispatch();
     return (
@@ -49,20 +51,17 @@ function ProfileNav() {
             padding={4}
             bg="rgba(0, 0, 0, 0.3)"
         >
-            {/* Logo */}
+           
             <Text fontSize="xl" fontWeight="bold" onClick={() => { navigate("/") }} _hover={{ cursor: 'pointer' }}>
                 Lockspot
-                {/* <a href="/">Lockspot</a> */}
+             
             </Text>
 
-            {/* <Spacer /> */}
-
-            {/* Login Button */}
             <div>
-                {/* <Button colorScheme="red">Account</Button> */}
+                
                 <Button colorScheme="red" mr={2} onClick={() => {
-                    dispatch(UserDispatch("", 'clear'));
-                    navigate("/")
+                    // dispatch(UserDispatch("", 'clear'));
+                    // navigate("/")
                 }}>
                     Log Out
                 </Button>
