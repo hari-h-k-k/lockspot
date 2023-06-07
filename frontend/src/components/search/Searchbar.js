@@ -7,6 +7,7 @@ function SearchBar({setLocation}) {
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleSearch = () => {
+        sessionStorage.setItem('location', JSON.stringify(searchQuery))
         setLocation(searchQuery)
     };
 

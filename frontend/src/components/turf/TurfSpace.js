@@ -7,10 +7,7 @@ import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 
 function TurfSpace({turfLocation}) {
-
-    // const [turfList, setTurfList] = useState({});
     const userDetails = useSelector(state => state.user);
-    // const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
     const toast = useToast();
     const navigate = useNavigate();
 
@@ -32,26 +29,7 @@ function TurfSpace({turfLocation}) {
         isLoading: isTurfList,
         error: turfListError,
         data: turfList,
-    } = useQuery(['getTurf', turfLocation, {staleTime: 300000}], getTurfList);
-
-
-    // useEffect(() => {
-    //     axiosInstance({
-    //         method: 'get',
-    //         url: '/getTurfs',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         params: {
-    //             location: turfLocation
-    //         }
-    //     }).then(function (responseData) {
-    //         const length = Object.keys(responseData.data).length;
-    //         if (length > 0) {
-    //             setTurfList(responseData.data)
-    //         }
-    //     });
-    // }, [turfLocation]);
+    } = useQuery(['getTurf', turfLocation], getTurfList);
 
     const handleCardClick = (turfKey) => {
         if (!userDetails.token) {
@@ -81,8 +59,6 @@ function TurfSpace({turfLocation}) {
                     <Grid {...gridLayout}>
                         {Object.keys(turfList).map((key) => {
                             const turf = turfList[key];
-                            console.log(key)
-                            console.log(turfList)
                             const {id, name, sports, location} = turf;
                             return (
                                 <TurfCard name={name} sports={sports} location={location}
@@ -101,7 +77,6 @@ function TurfSpace({turfLocation}) {
             </div>
         )
     }
-    ;
 }
 
 export default TurfSpace;
