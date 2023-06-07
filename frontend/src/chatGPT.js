@@ -1,43 +1,48 @@
-// import { Box, Flex, Input, InputGroup, InputLeftElement, InputRightElement, IconButton } from "@chakra-ui/react";
-// import { SearchIcon, MoonIcon, LockIcon } from "@chakra-ui/icons";
+import React from 'react';
+import { Box } from '@chakra-ui/react';
+import Img from "./assets/images/Thumbnail1.avif";
+const Page = () => {
+  return (
+    <Box display="flex" flexDirection="column" height="100vh">
+      <Box
+        height="25vh"
+        backgroundColor="blue"
+        position="relative"
+        paddingLeft="30px"
+      >
+        <Box
+          position="absolute"
+          top="50%"
+          left="25px"
+          transform="translateY(-50%)"
+          width="50px"
+          height="50px"
+          border="2px solid black"
+          backgroundImage={Img}
+          backgroundSize="cover"
+          backgroundPosition="center"
+        />
+      </Box>
+      <Box flex="1" backgroundColor="red" position="relative">
+        <Box
+          position="absolute"
+          top="50%"
+          right="-25px"
+          transform="translateY(-50%)"
+          width="50px"
+          height="50px"
+          border="2px solid black"
+          borderRadius="50%"
+          backgroundImage="url('/path/to/image.jpg')"
+          backgroundSize="cover"
+          backgroundPosition="center"
+        />
+      </Box>
+    </Box>
+  );
+};
 
-// function SearchBox() {
-//   return (
-//     <Flex justifyContent="center" alignItems="center" height="100vh">
-//       <Box width="400px" bg="orange" borderRadius="full" boxShadow="md" overflow="hidden">
-//         <Flex>
-//           <InputGroup flex="1" borderColor="gray.200" borderRightWidth="1px">
-//             <InputLeftElement pointerEvents="none" children={<MoonIcon color="gray.400" />} />
-//           </InputGroup>
-//           <InputGroup flex="3">
-//             <Input placeholder="Search" />
-//           </InputGroup>
-//           <InputGroup flex="1" borderColor="gray.200" borderLeftWidth="1px">
-//             <InputRightElement pointerEvents="none" children={<LockIcon color="gray.400" />} />
-//           </InputGroup>
-//         </Flex>
-//         <Box height="2px" bg="gray.200" />
-//         <Flex justifyContent="center" py={2}>
-//           <IconButton
-//             aria-label="Search"
-//             icon={<SearchIcon />}
-//             colorScheme="teal"
-//             borderRadius="full"
-//             boxShadow="md"
-//           />
-//         </Flex>
-//       </Box>
-//     </Flex>
-//   );
-// }
+export default Page;
 
-// export default SearchBox;
 
-// import { Box, Flex, Image, Text } from '@chakra-ui/react';
-
-// function Card() {
-//   return (
-    
-//   );
-// }
-// export default Card;
+// import Img from "./assets/images/Thumbnail1.avif";
