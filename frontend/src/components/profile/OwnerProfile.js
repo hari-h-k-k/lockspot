@@ -1,16 +1,9 @@
-// function OwnerProfile(){
-//     return(
-//         <div>Owner Page</div>
-//     )
-// };
-
-// export default OwnerProfile;
-
 import React from 'react';
-import { Box, Text, Tab, TabList, TabPanel, TabPanels, Tabs, Button, Image, Flex, Center, } from '@chakra-ui/react';
-import { useNavigate } from "react-router-dom";
+import {Box, Flex, Image, Tab, TabList, TabPanel, TabPanels, Tabs, Text} from '@chakra-ui/react';
+import {useNavigate} from "react-router-dom";
 import dummyImg from "../../assets/images/Thumbnail1.avif";
-import { SearchIcon, AddIcon } from '@chakra-ui/icons';
+import {AddIcon} from '@chakra-ui/icons';
+
 function OwnerProfile() {
     const navigate = useNavigate();
     return (
@@ -33,7 +26,7 @@ function OwnerProfile() {
                                 Add a venue
                             </Button> */}
                             <Flex>
-                                <VenueCard />
+                                <VenueCard/>
                                 <Box
                                     width="300px"
                                     borderWidth="1px"
@@ -42,7 +35,7 @@ function OwnerProfile() {
                                     boxShadow="md"
                                     border="dashed"
                                     margin="20px"
-                                    _hover={{ cursor: 'pointer' }}
+                                    _hover={{cursor: 'pointer'}}
                                 >
                                     <Flex justify="center" align="center" height="100%">
                                         {/* <AddIcon color="gray.300" boxSize={6} /> */}
@@ -83,9 +76,9 @@ function VenueCard() {
                 overflow="hidden"
                 boxShadow="md"
                 margin="20px"
-                _hover={{ cursor: 'pointer' }}
+                _hover={{cursor: 'pointer'}}
             >
-                <Image src={dummyImg} alt="Card Image" />
+                <Image src={dummyImg} alt="Card Image"/>
 
                 <Box p="4">
                     <Text fontWeight="bold" fontSize="xl">

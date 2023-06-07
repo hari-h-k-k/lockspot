@@ -1,24 +1,13 @@
 import './App.css';
-import { Button, Center,Flex } from "@chakra-ui/react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import {Button, Center, Flex} from "@chakra-ui/react";
+import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 import Home from './components/home/Home.js';
 import Profile from './components/profile/Profile.js';
 import TurfOverview from "./components/turf/TurfOverview";
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 function App() {
-    const userDetails =JSON.parse(sessionStorage.getItem('userDetails')) ;
-    if(userDetails==null){
-        const user= {
-            token: null,
-            email: "",
-            userId: "",
-            userName: "",
-            userType: "",
-            loginState: false
-        };
-        sessionStorage.setItem('userDetails', JSON.stringify(user));
-    };
+
     return (
         <>
             <BrowserRouter>
@@ -37,8 +26,7 @@ function App() {
 };
 
 function PrivateRoute({ component: Component }) {
-    // const userDetails = useSelector(state => state.user);
-    const userDetails =JSON.parse(sessionStorage.getItem('userDetails')) ;
+    const userDetails = useSelector(state => state.user);
     const token = userDetails.token;
     const navigate = useNavigate();
     return (

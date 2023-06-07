@@ -2,11 +2,28 @@ import './HomeStyle.css';
 import '../navigation/Navbar.css'
 import Navbar from '../navigation/Navbar.js';
 import Searchbar from '../search/Searchbar';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import TurfSpace from "../turf/TurfSpace";
 
 function Home() {
-    const [location, setLocation] = useState("");
+    const [location, setLocation] = useState('');
+
+    useEffect(() => {
+        // Clear session storage on refresh
+        window.onbeforeunload = () => {
+            sessionStorage.removeItem('location');
+        };
+
+        // Retrieve location from session storage
+        const storedLocation = JSON.parse(sessionStorage.getItem('location'));
+        if (storedLocation) {
+            setLocation(storedLocation);
+        }
+
+        return () => {
+            setLocation('');
+        };
+    }, []);
 
     return (
         <div>
@@ -14,9 +31,7 @@ function Home() {
                 <Navbar className="navbar"/>
                 <Searchbar setLocation={setLocation}/>
             </div>
-            {
-                <TurfSpace turfLocation={location} />
-            }
+            {location && <TurfSpace turfLocation={location}/>}
         </div>
     );
 }
