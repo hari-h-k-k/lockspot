@@ -1,12 +1,12 @@
-import { Box, Flex, Spacer, Button, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import {Button, Flex, Menu, MenuButton, MenuItem, MenuList, Text} from "@chakra-ui/react";
 import PopUp from '../auth/PopUp.js';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 const Navbar = () => {
-    // const userDetails = useSelector(state => state.user);
-    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
+    const userDetails = useSelector(state => state.user);
+    // const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
     const navigate = useNavigate();
     const dispatch = useDispatch();
     // console.log("userdetails=" + JSON.stringify(userDetails))
@@ -14,7 +14,7 @@ const Navbar = () => {
         <Flex {...styles.navFlex}>
             {/* Logo */}
             <Text fontSize="xl" fontWeight="bold">
-                <a href="/">Lockspot</a>
+                <a href="/">LockSpot</a>
             </Text>
 
             {/* Centered Menu Buttons */}
@@ -42,14 +42,16 @@ const Navbar = () => {
                             {userDetails.email}
                         </MenuButton>
                         <MenuList minW="150px" p={2} color="black">
-                            <MenuItem fontSize="sm" _hover={{ bg: "teal.100" }} onClick={() => navigate("/profile")}>My
+                            <MenuItem fontSize="sm" _hover={{bg: "teal.100"}} onClick={() => navigate("/profile")}>My
                                 Account</MenuItem>
-                            <MenuItem fontSize="sm" _hover={{ bg: "teal.100" }}
-                                onClick={() =>{dispatch(UserDispatch("", 'clear')); sessionStorage.removeItem('userDetails');window.location.reload();} }>Logout</MenuItem>
+                            <MenuItem fontSize="sm" _hover={{bg: "teal.100"}}
+                                      onClick={() => {
+                                          dispatch(UserDispatch("", 'clear'));
+                                      }}>Logout</MenuItem>
                         </MenuList>
                     </Menu>
                 </div>
-                : <PopUp />}
+                : <PopUp/>}
         </Flex>
     );
 };
@@ -70,6 +72,6 @@ const styles = {
     menuButton: {
         colorScheme: 'teal',
         mr: 2,
-        _hover: { bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' },
+        _hover: {bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)'},
     },
 };

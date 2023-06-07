@@ -1,27 +1,27 @@
 .dialogContent {
-     display: flex;
-     justify-content: center;
-     flex-direction: column;
-     width: 400px;
-     padding-top: 0;
-     text-align: center;
-     align-items: center;
-     height: 600px;
-     position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 400px;
+    padding-top: 0;
+    text-align: center;
+    align-items: center;
+    height: 600px;
+    position: relative;
 }
 
 .dialogBackground {
-     position: relative;
+    position: relative;
 }
 
 .dialogBackground::before {
-     background-image: url('../../assets/images/AuthenticationBackground.webp');
-     background-size: cover;
-     opacity: 0.5;
-     content: "";
-     position: absolute;
-     left: 0;
-     top: 0;
-     width: 100%;
-     height: 100%;
+    background-image: url('../../assets/images/AuthenticationBackground.webp');
+    background-size: cover;
+    opacity: 0.5;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
 }

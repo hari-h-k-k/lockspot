@@ -14,8 +14,8 @@ function Home() {
                 <Navbar className="navbar"/>
                 <Searchbar setLocation={setLocation}/>
             </div>
-            {
-                <TurfSpace turfLocation={location} />
+            {location &&
+                <TurfSpace turfLocation={location}/>
             }
         </div>
     );

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { InputGroup, Input, InputRightElement } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import {useState} from 'react';
+import {Input, InputGroup, InputRightElement} from '@chakra-ui/react';
+import {SearchIcon} from '@chakra-ui/icons';
 import './Search.css'
 
 function SearchBar({setLocation}) {
@@ -32,9 +32,9 @@ function SearchBar({setLocation}) {
                 <InputRightElement
                     pointerEvents="auto"
                     onClick={handleSearch}
-                    style={{ cursor: 'pointer' }}
+                    style={{cursor: 'pointer'}}
                 >
-                    <SearchIcon color="gray.300" />
+                    <SearchIcon color="gray.300"/>
                 </InputRightElement>
             </InputGroup>
         </div>

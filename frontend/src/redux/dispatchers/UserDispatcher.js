@@ -6,8 +6,7 @@ export default function UserDispatch(loginResponse,change){
             email: loginResponse.email,
             userId: loginResponse.userId,
             userName:loginResponse.userName,
-            userType:loginResponse.userType,
-            loginState:true,
+            userType: loginResponse.userType
         }
     });
 }
