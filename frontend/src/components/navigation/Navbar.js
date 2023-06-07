@@ -58,6 +58,9 @@ export default Navbar;
 
 const styles = {
     navFlex: {
+        // position:"fixed",
+        width:"100%",
+        height:"10vh",
         as: "nav",
         align: "center",
         justify: "space-between",

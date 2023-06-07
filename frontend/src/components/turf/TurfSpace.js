@@ -66,7 +66,7 @@ function TurfSpace({ turfLocation }) {
             });
         } else {
             console.log("Clicked on", turfKey)
-            navigate('/turfOverview', { state: { turfKey } });
+            navigate('/turfDetails', { state: { turfKey } });
         }
     };
 
