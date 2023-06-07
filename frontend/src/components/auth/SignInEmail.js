@@ -46,8 +46,6 @@ const SignInEmail = ({handleClose}) => {
             console.log(response);
             if (response.statusText) {
                 if (response.data["message"] === 'Credentials match!') {
-                    sessionStorage.setItem('userDetails', JSON.stringify(response.data));
-                    window.location.reload();
                     dispatch(UserDispatch(response.data, 'edit'))
                     console.log('Credentials match!');
                 } else {

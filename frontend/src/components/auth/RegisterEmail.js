@@ -1,22 +1,20 @@
 import {useState} from "react";
 import {
-    ChakraProvider,
     Button,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
+    HStack,
     Input,
+    ModalBody,
+    ModalCloseButton,
+    ModalFooter,
+    ModalHeader,
+    Radio,
+    RadioGroup,
     Stack,
     useToast
 } from "@chakra-ui/react";
-import {Radio, RadioGroup, HStack} from "@chakra-ui/react";
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {showLogIn} from "../../redux/dispatchers/DialogDispatcher.js";
-import {DIALOG_SIGN_IN_EMAIL, DIALOG_REGISTER_EMAIL, DIALOG_DEFAULT} from '../../constants/strings/Strings.js';
+import {DIALOG_DEFAULT} from '../../constants/strings/Strings.js';
 import axiosInstance from '../../Interceptor.js';
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
 
@@ -67,22 +65,8 @@ const RegEmail = ({handleClose}) => {
             const response = responseData;
             console.log(response);
             if (response.statusText) {
-                sessionStorage.setItem('userDetails', JSON.stringify(response.data));
-                window.location.reload();
                 dispatch(UserDispatch(response.data, 'edit'));
                 showToast(response.data.message);
-                // toast(response.data.message, {
-                //   // Custom options
-                //   position: 'top-center',
-                //   autoClose: 2000,
-                //   hideProgressBar: true,
-                //   closeOnClick: false,
-                //   // pauseOnHover: true,
-                //   // draggable: true,
-                //   // progress: undefined,
-                //   // Add your own custom className for styling
-
-                // });
                 console.log('Registration successful:', response.data);
             } else {
                 console.log('Request failed with status:', response.status);

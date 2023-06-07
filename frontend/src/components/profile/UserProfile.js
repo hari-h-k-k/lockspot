@@ -1,5 +1,5 @@
-function OwnerProfile(){
-    return(
+function OwnerProfile() {
+    return (
         <div>User Page</div>
     )
 };
