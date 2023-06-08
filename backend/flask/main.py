@@ -67,11 +67,16 @@ def create_tables():
         )''',
         '''CREATE TABLE IF NOT EXISTS sports (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            turf_id INT,
-            name VARCHAR(255),
-            FOREIGN KEY (turf_id) REFERENCES turfs(id)
+            name VARCHAR(255)
         )''',
-        '''CREATE TABLE IF NOT EXISTS review (
+        '''CREATE TABLE IF NOT EXISTS turf_sports (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            turf_id INT,
+            sport_id INT,
+            FOREIGN KEY (turf_id) REFERENCES turfs(id),
+            FOREIGN KEY (sport_id) REFERENCES sports(id)
+        )''',
+        '''CREATE TABLE IF NOT EXISTS reviews (
             id INT AUTO_INCREMENT PRIMARY KEY,
             review VARCHAR(255),
             turf_id INT,
@@ -126,28 +131,45 @@ def insert_dummy_data():
 
     if sports_count == 0:
         sports_data = [
-            (1, 'Football'),
-            (1, 'Basketball'),
-            (1, 'Tennis'),
-            (2, 'Basketball'),
-            (2, 'Football'),
-            (2, 'Cricket'),
-            (3, 'Tennis'),
-            (4, 'Cricket')
+            'Football',
+            'Basketball',
+            'Tennis',
+            'Swimming',
+            'Cricket',
+            'Badminton',
+            'Snooker'
         ]
-        insert_sports_query = 'INSERT INTO sports (turf_id, name) VALUES (%s, %s)'
+        insert_sports_query = 'INSERT INTO sports (name) VALUES (%s)'
         cursor.executemany(insert_sports_query, sports_data)
 
-    cursor.execute('SELECT COUNT(*) FROM review')
+    cursor.execute('SELECT COUNT(*) FROM turf_sports')
+    turf_sports_count = cursor.fetchone()[0]
+
+    if turf_sports_count == 0:
+        turf_sports_data = [
+            (1, 1),
+            (1, 2),
+            (1, 3),
+            (2, 2),
+            (2, 1),
+            (2, 5),
+            (3, 3),
+            (4, 5)
+        ]
+        insert_turf_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
+        cursor.executemany(insert_turf_sports_query, turf_sports_data)
+
+    cursor.execute('SELECT COUNT(*) FROM reviews')
     review_count = cursor.fetchone()[0]
 
     if review_count == 0:
         review_data = [
             ('Great turf!', 1, 1),
+            ('Bad turf!', 1, 2),
             ('Nice place to play basketball.', 2, 2),
             ('Good for tennis practice.', 3, 3)
         ]
-        insert_review_query = 'INSERT INTO review (review, turf_id, user_id) VALUES (%s, %s, %s)'
+        insert_review_query = 'INSERT INTO reviews (review, turf_id, user_id) VALUES (%s, %s, %s)'
         cursor.executemany(insert_review_query, review_data)
 
     db.commit()
@@ -177,7 +199,8 @@ def signInEmail():
         if password == db_password:
             access_token = create_access_token(identity=email)
             return jsonify(
-                {'message': 'Credentials match!', 'token': access_token, 'id': result[0], 'email': result[1],'userType': result[3]})
+                {'message': 'Credentials match!', 'token': access_token, 'id': result[0], 'email': result[1],
+                 'userType': result[3]})
         else:
             return jsonify({'message': 'Incorrect password!'})
     else:
@@ -223,8 +246,9 @@ def getTurfs():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, location, sports.name FROM turfs JOIN sports ON "
-        "turfs.id = sports.turf_id WHERE location LIKE %s",
+        "SELECT turfs.id, turfs.name, turfs.location, sports.name AS sport_name, reviews.review FROM turfs LEFT JOIN "
+        "turf_sports ON turfs.id = turf_sports.turf_id LEFT JOIN sports ON turf_sports.sport_id = sports.id LEFT JOIN "
+        "reviews ON turfs.id = reviews.turf_id WHERE location LIKE %s",
         ('%' + location + '%',))
     turfs = cursor.fetchall()
     cursor.close()
@@ -236,45 +260,104 @@ def getTurfs():
         turf_name = turf[1]
         turf_location = turf[2]
         sport = turf[3]
+        review = turf[4]
 
         if turf_id not in turfs_json:
             turfs_json[turf_id] = {
-                'id':turf_id,
+                'id': turf_id,
                 'name': turf_name,
                 'sports': [],
-                'location': turf_location
+                'location': turf_location,
+                'reviews': []
             }
 
         turfs_json[turf_id]['sports'].append(sport)
+        if review not in turfs_json[turf_id]['reviews']:
+            turfs_json[turf_id]['reviews'].append(review)
 
     turfs_json_str = json.dumps(turfs_json)
 
     return turfs_json_str
 
 
-# @app.route('/addVenue', methods=['POST'])
-# def addVenue():
-#     ownerId = request.json.get('ownerId')
-#     location = request.json.get('location')
-#     name = request.json.get('name')
-#     sports= request.json.get('sports')
+@app.route('/addVenue', methods=['POST'])
+def addVenue():
+    owner_id = request.json.get('ownerId')
+    turf_name = request.json.get('turfName')
+    location = request.json.get('location')
+    sports = request.json.get('sports')
 
-#     db = get_db()
-#     cursor = db.cursor()
-#     cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
-#     result = cursor.fetchone()
+    db = get_db()
+    cursor = db.cursor()
 
-#     try:
-#         query = "INSERT INTO turfs (name, owner_id, location,created_at) VALUES (%s, %s, %s, %s)"
-#         values = (name, ownerId, location, "  ")
-#         cursor.execute(query, values)
-#         db.commit()
-#         return jsonify(
-#             {'message': 'Venue added successfully'})
+    try:
+        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, created_at) VALUES (%s, %s, %s, %s)'
+        insert_turf_values = (turf_name, owner_id, location, '2023-06-05 10:00:00',)
+        cursor.execute(insert_turf_query, insert_turf_values)
 
-#     except Exception as e:
-#         return jsonify({'message': 'Error adding venue', 'error': str(e)}), 500
-    
+        db.commit()
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        turf_id = cursor.fetchone()[0]
+
+        for sport in sports:
+            cursor.execute('SELECT id FROM sports WHERE name = %s', (sport,))
+            sport_id = cursor.fetchone()[0]
+
+            insert_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
+            insert_sports_values = (turf_id, sport_id,)
+            cursor.execute(insert_sports_query, insert_sports_values)
+
+        db.commit()
+        return jsonify({'message': 'Added venue successfully'})
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({'message': 'Error adding venue', 'error': str(e)}), 500
+
+    finally:
+        cursor.close()
+        db.close()
+
+
+@app.route('/updateVenue', methods=['POST'])
+def updateVenue():
+    turf_id = request.json.get('turfId')
+    turf_name = request.json.get('turfName')
+    location = request.json.get('location')
+    sports = request.json.get('sports')
+
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        update_turf_query = 'UPDATE turfs SET name = %s, location = %s WHERE id = %s'
+        update_turf_values = (turf_name, location, turf_id)
+        cursor.execute(update_turf_query, update_turf_values)
+
+        delete_sports_query = 'DELETE FROM turf_sports WHERE turf_id = %s'
+        delete_sports_values = (turf_id,)
+        cursor.execute(delete_sports_query, delete_sports_values)
+
+        for sport in sports:
+            cursor.execute('SELECT id FROM sports WHERE name = %s', (sport,))
+            sport_id = cursor.fetchone()[0]
+
+            insert_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
+            insert_sports_values = (turf_id, sport_id,)
+            cursor.execute(insert_sports_query, insert_sports_values)
+
+        db.commit()
+        return jsonify({'message': 'Venue updated successfully'})
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({'message': 'Error updating venue', 'error': str(e)}), 500
+
+    finally:
+        cursor.close()
+        db.close()
+
+
 if __name__ == '__main__':
     create_database()
     create_tables()
