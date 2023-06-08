@@ -3,8 +3,8 @@ import {useNavigate} from "react-router-dom";
 import UserDispatch from "../../redux/dispatchers/UserDispatcher.js";
 import {useDispatch, useSelector} from 'react-redux';
 import BgImg from '../../assets/images/ProfileBg.jpg';
-import OwnerProfile from "./OwnerProfile.js";
-import UserProfile from "./UserProfile.js";
+import OwnerProfile from "./owner/OwnerProfile.js";
+import UserProfile from "./user/UserProfile.js";
 
 function Profile() {
     const userDetails = useSelector(state => state.user);

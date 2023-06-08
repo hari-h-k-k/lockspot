@@ -357,6 +357,16 @@ def updateVenue():
         cursor.close()
         db.close()
 
+# @app.route('/getSports',methods=['GET'])
+# def getSports():
+#     db=get_db()
+#     cursor=db.cursor()
+#     get_sports_query='SELECT * FROM sports'
+#     cursor.execute(get_sports_query)
+#     sports=cursor.fetchall()
+#     sports_json={}
+#     return jsonify(sports)
+
 
 if __name__ == '__main__':
     create_database()

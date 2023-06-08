@@ -1,48 +1,36 @@
-import React from 'react';
-import { Box } from '@chakra-ui/react';
-import Img from "./assets/images/Thumbnail1.avif";
-const Page = () => {
+import { useState } from 'react';
+import { Select, Button } from '@chakra-ui/react';
+
+function DropdownExample() {
+  const [selectedValues, setSelectedValues] = useState([]);
+
+  const handleSelectChange = (event) => {
+    const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
+    setSelectedValues(selectedOptions);
+  };
+
+  const handleSubmit = () => {
+    console.log(selectedValues);
+  };
+
   return (
-    <Box display="flex" flexDirection="column" height="100vh">
-      <Box
-        height="25vh"
-        backgroundColor="blue"
-        position="relative"
-        paddingLeft="30px"
+    <div style={{ height: '200px' }}>
+      <Select
+        multiple
+        placeholder="Select options"
+        onChange={handleSelectChange}
+        value={selectedValues}
       >
-        <Box
-          position="absolute"
-          top="50%"
-          left="25px"
-          transform="translateY(-50%)"
-          width="50px"
-          height="50px"
-          border="2px solid black"
-          backgroundImage={Img}
-          backgroundSize="cover"
-          backgroundPosition="center"
-        />
-      </Box>
-      <Box flex="1" backgroundColor="red" position="relative">
-        <Box
-          position="absolute"
-          top="50%"
-          right="-25px"
-          transform="translateY(-50%)"
-          width="50px"
-          height="50px"
-          border="2px solid black"
-          borderRadius="50%"
-          backgroundImage="url('/path/to/image.jpg')"
-          backgroundSize="cover"
-          backgroundPosition="center"
-        />
-      </Box>
-    </Box>
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+        <option value="option4">Option 4</option>
+      </Select>
+      <Button mt={4} onClick={handleSubmit}>
+        Submit
+      </Button>
+    </div>
   );
-};
+}
 
-export default Page;
-
-
-// import Img from "./assets/images/Thumbnail1.avif";
+export default DropdownExample;
