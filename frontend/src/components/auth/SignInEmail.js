@@ -55,7 +55,7 @@ const SignInEmail = ({handleClose}) => {
             } else {
                 console.log('Request failed with status:', response.status);
             }
-
+// Enter key login
             setEmail('');
             setPassword('');
             dispatch(showLogIn(DIALOG_DEFAULT));

@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { Box, Flex, Image, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
-import { useNavigate } from "react-router-dom";
-import dummyImg from "../../../assets/images/Thumbnail1.avif";
-import { AddIcon } from '@chakra-ui/icons';
-import VenueModal from "./VenueModal.js";
+import React, {useState} from 'react';
 import {
-    Button,
+    Box,
+    Container,
+    Flex,
+    Grid,
+    Image,
     Modal,
-    ModalBody,
-    ModalCloseButton,
     ModalContent,
-    ModalFooter,
-    ModalHeader,
     ModalOverlay,
-
-} from "@chakra-ui/react";
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
+    Text
+} from '@chakra-ui/react';
+import {useNavigate} from "react-router-dom";
+import dummyImg from "../../../assets/images/Thumbnail1.avif";
+import {AddIcon} from '@chakra-ui/icons';
+import VenueModal from "./VenueModal.js";
 import {useQuery} from 'react-query';
 import axiosInstance from '../../../Interceptor.js';
 import {useSelector} from 'react-redux';
@@ -36,7 +40,7 @@ function OwnerProfile() {
 
                 <TabPanels>
                     <TabPanel>
-                        <MyVenues />
+                        <MyVenues/>
                     </TabPanel>
                     <TabPanel>
                         <Box mt={4} mx="auto" maxW="80%">
@@ -56,7 +60,6 @@ function OwnerProfile() {
 
 function MyVenues() {
     const userDetails = useSelector(state => state.user);
-    console.log("userid="+userDetails.userId);
     const [isOpen, setIsOpen] = useState(false);
     const handleClose = () => {
         setIsOpen(false);
@@ -70,12 +73,11 @@ function MyVenues() {
                 'Content-Type': 'application/json'
             },
             params: {
-                ownerId: userDetails.userId 
-              },
-            
+                ownerId: userDetails.userId
+            },
         });
         console.log(response);
-        
+
         return response.data;
     };
 
@@ -85,29 +87,36 @@ function MyVenues() {
         data: ownerVenues,
     } = useQuery(['getOwnerVenues'], getOwnerVenues);
 
+    const gridLayout = {
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '1rem',
+    };
+
     return (
         <>
-            <Box mt={4} mx="auto" maxW="90%">
+            <Container maxW="container.xl" p="2rem">
                 <Modal isOpen={isOpen} onClose={handleClose} size="xl">
-                    <ModalOverlay />
+                    <ModalOverlay/>
                     <ModalContent>
                         <VenueModal setIsOpen={setIsOpen}/>
                     </ModalContent>
                 </Modal>
-                <Flex>
-                {/* <VenueCard /> */}
-                    {ownerVenues?ownerVenues.map((item) => 
-                            (<VenueCard venue={item}/>)
-                        ):<></>}
+                <Grid {...gridLayout}>
+                    {ownerVenues &&
+                        ownerVenues.map((item) => (
+                            <VenueCard venue={item}/>
+                        ))}
+
                     <Box
                         width="300px"
+                        height="500px"
                         borderWidth="1px"
                         borderRadius="lg"
                         overflow="hidden"
                         boxShadow="md"
                         border="dashed"
                         margin="20px"
-                        _hover={{ cursor: 'pointer' }}
+                        _hover={{cursor: 'pointer'}}
                         onClick={() => setIsOpen(true)}
                     >
                         <Flex justify="center" align="center" height="100%">
@@ -117,8 +126,8 @@ function MyVenues() {
                             />
                         </Flex>
                     </Box>
-                </Flex>
-            </Box>
+                </Grid>
+            </Container>
         </>
     )
 };
@@ -127,16 +136,16 @@ function VenueCard({venue}) {
     return (
         <>
             <Box
-                maxW="300px"
-                maxH="600px"
+                width="300px"
+                height="500px"
                 borderWidth="1px"
                 borderRadius="lg"
                 overflow="hidden"
                 boxShadow="md"
                 margin="20px"
-                _hover={{ cursor: 'pointer' }}
+                _hover={{cursor: 'pointer'}}
             >
-                <Image src={dummyImg} alt="Card Image" />
+                <Image src={dummyImg} alt="Card Image"/>
 
                 <Box p="4">
                     <Text fontWeight="bold" fontSize="xl">
@@ -151,7 +160,8 @@ function VenueCard({venue}) {
                         <Text fontWeight="bold">4.5</Text>
                     </Flex>
                 </Box>
-            </Box></>
+            </Box>
+        </>
     )
 };
 
