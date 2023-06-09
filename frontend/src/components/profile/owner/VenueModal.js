@@ -13,7 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { Select, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-
+import {useQuery} from 'react-query';
+import axiosInstance from '../../../Interceptor.js';
 import {
     Input,
     Stack,
@@ -29,6 +30,10 @@ function VenueModal({ setIsOpen }) {
     const [overview, setOverview] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const fileInputRef = useRef(null);
+    
+    const [selectedSports, setSelectedSports] = useState([]);
+    const [availableOptions, setAvailableOptions] = useState([]);
+    // sportsList?sportsList:[{id:"1",name:"dummy"}]
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setSelectedImage(file);
@@ -42,8 +47,21 @@ function VenueModal({ setIsOpen }) {
         setIsOpen(false);
     };
 
-    const [selectedSports, setSelectedSports] = useState([]);
-    const [availableOptions, setAvailableOptions] = useState(['Football', 'Basketball', 'Tennis', 'Cricket']);
+    const getSportsList = async () => {
+        const response = await axiosInstance({
+            method: 'get',
+            url: '/getSports',
+        });
+        setAvailableOptions(response.data)
+        return response.data;
+    };
+
+    const {
+        isLoading: isSportsList,
+        error: sportsListError,
+        data: sportsList,
+    } = useQuery(['getSports'], getSportsList);
+    
     const handleSportSelect = (option) => {
         if (!selectedSports.includes(option)) {
             setSelectedSports([...selectedSports, option]);
@@ -58,9 +76,6 @@ function VenueModal({ setIsOpen }) {
         setSelectedSports(updatedSelectedSports);
         setAvailableOptions([...availableOptions, option]);
     };
-
-
-
 
     return (
         <>
@@ -117,12 +132,12 @@ function VenueModal({ setIsOpen }) {
                             Select Sports
                         </MenuButton>
                         <MenuList>
-                            {availableOptions.map((option) => (
+                            {availableOptions.map((item) => (
                                 <MenuItem
-                                    key={option}
-                                    onClick={() => handleSportSelect(option)}
+                                    key={item.id}
+                                    onClick={() => handleSportSelect(item)}
                                 >
-                                    {option}
+                                    {item.name}
                                 </MenuItem>
                             ))}
                         </MenuList>
@@ -131,8 +146,8 @@ function VenueModal({ setIsOpen }) {
                     {selectedSports.length > 0 && (
                         <Box>
                             {selectedSports.map((sport) => (
-                                <Tag key={sport} size="md" variant="subtle" colorScheme="blue">
-                                    <TagLabel>{sport}</TagLabel>
+                                <Tag key={sport.id} size="md" variant="subtle" colorScheme="blue">
+                                    <TagLabel>{sport.name}</TagLabel>
                                     <TagCloseButton onClick={() => handleRemoveOption(sport)} />
                                 </Tag>
                             ))}

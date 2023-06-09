@@ -50,6 +50,7 @@ function TurfSpace({turfLocation}) {
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '1rem',
     };
+
     if (turfList) {
         return (
             <div className="turfPage">
