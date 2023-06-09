@@ -2,10 +2,9 @@ import './App.css';
 import {Button, Center, Flex} from "@chakra-ui/react";
 import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 import Home from './components/home/Home.js';
-import Profile from './components/profile/Profile.js';
 import TurfDetails from "./components/turf/TurfDetails";
-import { useSelector } from 'react-redux';
-import ChatGPT from "./chatGPT.js";
+import {useSelector} from 'react-redux';
+import ProfileIndex from "./components/profile/ProfileIndex.js";
 
 function App() {
 
@@ -16,9 +15,9 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/venues" element={<div>Venues page</div>} />
                     <Route path="/events" element={<div>Events page</div>} />
-                    <Route path="/accessories" element={<div>Accessories page</div>} />
-                    <Route path="/profile" element={<PrivateRoute component={Profile} />} />
-                    <Route path="/turfDetails" element={<PrivateRoute component={TurfDetails} />}/>
+                    <Route path="/accessories" element={<div>Accessories page</div>}/>
+                    <Route path="/profile" element={<PrivateRoute component={ProfileIndex}/>}/>
+                    <Route path="/turfDetails" element={<PrivateRoute component={TurfDetails}/>}/>
                 </Routes>
             </BrowserRouter>
             {/* <ChatGPT/>  */}
