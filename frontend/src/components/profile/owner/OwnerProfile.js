@@ -15,6 +15,10 @@ import {
     ModalOverlay,
 
 } from "@chakra-ui/react";
+import {useQuery} from 'react-query';
+import axiosInstance from '../../../Interceptor.js';
+import {useSelector} from 'react-redux';
+
 function OwnerProfile() {
     const navigate = useNavigate();
     return (
@@ -51,10 +55,36 @@ function OwnerProfile() {
 };
 
 function MyVenues() {
+    const userDetails = useSelector(state => state.user);
+    console.log("userid="+userDetails.userId);
     const [isOpen, setIsOpen] = useState(false);
     const handleClose = () => {
         setIsOpen(false);
     };
+
+    const getOwnerVenues = async () => {
+        const response = await axiosInstance({
+            method: 'get',
+            url: '/getOwnerVenues',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            params: {
+                ownerId: userDetails.userId 
+              },
+            
+        });
+        console.log(response);
+        
+        return response.data;
+    };
+
+    const {
+        isLoading: isOwnerVenuesLoad,
+        error: ownerVenuesError,
+        data: ownerVenues,
+    } = useQuery(['getOwnerVenues'], getOwnerVenues);
+
     return (
         <>
             <Box mt={4} mx="auto" maxW="90%">
@@ -65,8 +95,10 @@ function MyVenues() {
                     </ModalContent>
                 </Modal>
                 <Flex>
-                    <VenueCard />
-                    {/* <AddCard setIsOpen={setIsOpen}/> */}
+                {/* <VenueCard /> */}
+                    {ownerVenues?ownerVenues.map((item) => 
+                            (<VenueCard venue={item}/>)
+                        ):<></>}
                     <Box
                         width="300px"
                         borderWidth="1px"
@@ -91,7 +123,7 @@ function MyVenues() {
     )
 };
 
-function VenueCard() {
+function VenueCard({venue}) {
     return (
         <>
             <Box
@@ -108,10 +140,10 @@ function VenueCard() {
 
                 <Box p="4">
                     <Text fontWeight="bold" fontSize="xl">
-                        Card Title
+                        {venue.name}
                     </Text>
                     <Text mt="2" color="gray.500">
-                        Card Description
+                        {venue.location}
                     </Text>
 
                     <Flex mt="4" align="center">

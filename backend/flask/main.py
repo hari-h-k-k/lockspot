@@ -199,7 +199,7 @@ def signInEmail():
         if password == db_password:
             access_token = create_access_token(identity=email)
             return jsonify(
-                {'message': 'Credentials match!', 'token': access_token, 'id': result[0], 'email': result[1],
+                {'message': 'Credentials match!', 'token': access_token, 'userId': result[0], 'email': result[1],
                  'userType': result[3]})
         else:
             return jsonify({'message': 'Incorrect password!'})
@@ -233,7 +233,7 @@ def registerEmail():
         result = cursor.fetchone()
         access_token = create_access_token(identity=email)
         return jsonify(
-            {'message': 'User registered successfully', 'token': access_token, 'id': result[0], 'email': result[1],
+            {'message': 'User registered successfully', 'token': access_token, 'userId': result[0], 'email': result[1],
              'userType': result[3]})
 
     except Exception as e:
@@ -357,15 +357,61 @@ def updateVenue():
         cursor.close()
         db.close()
 
-# @app.route('/getSports',methods=['GET'])
-# def getSports():
-#     db=get_db()
-#     cursor=db.cursor()
-#     get_sports_query='SELECT * FROM sports'
-#     cursor.execute(get_sports_query)
-#     sports=cursor.fetchall()
-#     sports_json={}
-#     return jsonify(sports)
+@app.route('/getSports',methods=['GET'])
+def getSports():
+    db=get_db()
+    cursor=db.cursor()
+    get_sports_query='SELECT * FROM sports'
+    cursor.execute(get_sports_query)
+    sports=cursor.fetchall()
+    sports_json=[]
+
+    for sport in sports:
+        sport_ele={
+            'id':sport[0],
+            'name':sport[1]
+        }
+        sports_json.append(sport_ele)
+    
+    cursor.close()
+    db.close()
+    return sports_json
+
+@app.route('/getOwnerVenues',methods=['GET'])
+def getOwnerVenues():
+    owner_id = request.args.get('ownerId')
+    db=get_db()
+    cursor=db.cursor()
+    cursor.execute(
+        "SELECT turfs.id, turfs.name, turfs.location, turf_sports.sport_id, sports.name AS sport_name "
+        "FROM turfs "
+        "LEFT JOIN turf_sports ON turfs.id = turf_sports.turf_id "
+        "LEFT JOIN sports ON turf_sports.sport_id = sports.id "
+        "WHERE turfs.owner_id = %s",
+        (owner_id,)
+    )
+    print(owner_id)
+    venues=cursor.fetchall()
+    mergedData={}
+    for id,name,location,s_id,s_name in venues:
+        if(id in mergedData and s_id and s_name):
+            mergedData[id]['sports'].append({'sportId':s_id, 'sportName':s_name})
+        else:
+            mergedData[id]={
+                'id': id,
+                'name': name,
+                'location': location,
+                'sports': []
+            }
+            if(s_id and s_name):
+                mergedData[id]['sports'].append({'sportId':s_id,'sportName':s_name})
+    owner_venues=[]
+    for i in mergedData:
+        owner_venues.append(mergedData[i])
+    
+    cursor.close()
+    db.close()
+    return owner_venues
 
 
 if __name__ == '__main__':
