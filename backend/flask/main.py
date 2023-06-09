@@ -375,7 +375,7 @@ def getSports():
     
     cursor.close()
     db.close()
-    return sports_json
+    return json.dumps(sports_json)
 
 @app.route('/getOwnerVenues',methods=['GET'])
 def getOwnerVenues():
@@ -411,7 +411,7 @@ def getOwnerVenues():
     
     cursor.close()
     db.close()
-    return owner_venues
+    return json.dumps(owner_venues)
 
 
 if __name__ == '__main__':
