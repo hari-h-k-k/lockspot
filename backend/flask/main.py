@@ -3,7 +3,7 @@ import json
 from flask import request, jsonify, Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
-
+import base64
 app = Flask(__name__)
 CORS(app)
 
@@ -62,6 +62,7 @@ def create_tables():
             name VARCHAR(255),
             owner_id INT,
             location VARCHAR(255),
+            cover_image LONGBLOB,
             created_at TIMESTAMP,
             FOREIGN KEY (owner_id) REFERENCES users(id)
         )''',
@@ -289,18 +290,15 @@ def addVenue():
 
     db = get_db()
     cursor = db.cursor()
-
     try:
         insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, created_at) VALUES (%s, %s, %s, %s)'
         insert_turf_values = (turf_name, owner_id, location, '2023-06-05 10:00:00',)
         cursor.execute(insert_turf_query, insert_turf_values)
-
         db.commit()
         cursor.execute("SELECT LAST_INSERT_ID()")
         turf_id = cursor.fetchone()[0]
-
         for sport in sports:
-            cursor.execute('SELECT id FROM sports WHERE name = %s', (sport,))
+            cursor.execute('SELECT id FROM sports WHERE id = %s', (sport['id'],))
             sport_id = cursor.fetchone()[0]
 
             insert_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
@@ -390,7 +388,6 @@ def getOwnerVenues():
         "WHERE turfs.owner_id = %s",
         (owner_id,)
     )
-    print(owner_id)
     venues=cursor.fetchall()
     mergedData={}
     for id,name,location,s_id,s_name in venues:
