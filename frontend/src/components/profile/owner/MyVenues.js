@@ -36,7 +36,6 @@ function MyVenues() {
                 ownerId: userDetails.userId
             },
         });
-        console.log(response);
 
         return response.data;
     };
@@ -45,7 +44,7 @@ function MyVenues() {
         isLoading: isOwnerVenuesLoad,
         error: ownerVenuesError,
         data: ownerVenues,
-    } = useQuery(['getOwnerVenues'], getOwnerVenues);
+    } = useQuery(['getOwnerVenues',isOpen], getOwnerVenues);
 
     return (
         <>
