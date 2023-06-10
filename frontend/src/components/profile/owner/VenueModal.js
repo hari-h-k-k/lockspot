@@ -91,19 +91,20 @@ function VenueModal({ setIsOpen }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        
         const payload = {
             ownerId: userDetails.userId,
             turfName: name,
             location: location,
-            sports: selectedSports,
+            sports: JSON.stringify(selectedSports),
+            coverImage: selectedImage
         };
-
+        console.log(JSON.stringify(payload));
         axiosInstance({
             method: 'post',
             url: '/addVenue',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form-data',
             },
             data: payload
         }).then(function (responseData) {

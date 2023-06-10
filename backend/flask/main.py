@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 import base64
 app = Flask(__name__)
 CORS(app)
+import io
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -283,16 +284,17 @@ def getTurfs():
 
 @app.route('/addVenue', methods=['POST'])
 def addVenue():
-    owner_id = request.json.get('ownerId')
-    turf_name = request.json.get('turfName')
-    location = request.json.get('location')
-    sports = request.json.get('sports')
+    owner_id = request.form.get('ownerId')
+    turf_name = request.form.get('turfName')
+    location = request.form.get('location')
+    sports = json.loads(request.form.get('sports'))
+    image = request.files['coverImage']
 
     db = get_db()
     cursor = db.cursor()
     try:
-        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, created_at) VALUES (%s, %s, %s, %s)'
-        insert_turf_values = (turf_name, owner_id, location, '2023-06-05 10:00:00',)
+        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image, created_at) VALUES (%s, %s, %s, %s, %s)'
+        insert_turf_values = (turf_name, owner_id, location, image.read(), '2023-06-05 10:00:00',)
         cursor.execute(insert_turf_query, insert_turf_values)
         db.commit()
         cursor.execute("SELECT LAST_INSERT_ID()")
@@ -381,7 +383,7 @@ def getOwnerVenues():
     db=get_db()
     cursor=db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, turfs.location, turf_sports.sport_id, sports.name AS sport_name "
+        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, turf_sports.sport_id, sports.name AS sport_name "
         "FROM turfs "
         "LEFT JOIN turf_sports ON turfs.id = turf_sports.turf_id "
         "LEFT JOIN sports ON turf_sports.sport_id = sports.id "
@@ -390,7 +392,7 @@ def getOwnerVenues():
     )
     venues=cursor.fetchall()
     mergedData={}
-    for id,name,location,s_id,s_name in venues:
+    for id,name,location,coverImage,s_id,s_name in venues:
         if(id in mergedData and s_id and s_name):
             mergedData[id]['sports'].append({'sportId':s_id, 'sportName':s_name})
         else:
@@ -398,8 +400,11 @@ def getOwnerVenues():
                 'id': id,
                 'name': name,
                 'location': location,
+                'coverImage': None,
                 'sports': []
             }
+            if(coverImage):
+                mergedData[id]['coverImage']=base64.b64encode(coverImage).decode('utf-8')
             if(s_id and s_name):
                 mergedData[id]['sports'].append({'sportId':s_id,'sportName':s_name})
     owner_venues=[]
