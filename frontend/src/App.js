@@ -5,6 +5,7 @@ import Home from './components/home/Home.js';
 import TurfDetails from "./components/turf/TurfDetails";
 import {useSelector} from 'react-redux';
 import ProfileIndex from "./components/profile/ProfileIndex.js";
+import TurfBooking from "./components/turf/TurfBooking";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/accessories" element={<div>Accessories page</div>}/>
                     <Route path="/profile" element={<PrivateRoute component={ProfileIndex}/>}/>
                     <Route path="/turfDetails" element={<PrivateRoute component={TurfDetails}/>}/>
+                    <Route path="/turfBooking" element={<PrivateRoute component={TurfBooking}/>}/>
                 </Routes>
             </BrowserRouter>
             {/* <ChatGPT/>  */}

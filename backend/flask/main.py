@@ -357,31 +357,33 @@ def updateVenue():
         cursor.close()
         db.close()
 
-@app.route('/getSports',methods=['GET'])
+
+@app.route('/getSports', methods=['GET'])
 def getSports():
-    db=get_db()
-    cursor=db.cursor()
-    get_sports_query='SELECT * FROM sports'
+    db = get_db()
+    cursor = db.cursor()
+    get_sports_query = 'SELECT * FROM sports'
     cursor.execute(get_sports_query)
-    sports=cursor.fetchall()
-    sports_json=[]
+    sports = cursor.fetchall()
+    sports_json = []
 
     for sport in sports:
-        sport_ele={
-            'id':sport[0],
-            'name':sport[1]
+        sport_ele = {
+            'id': sport[0],
+            'name': sport[1]
         }
         sports_json.append(sport_ele)
-    
+
     cursor.close()
     db.close()
-    return sports_json
+    return json.dumps(sports_json)
 
-@app.route('/getOwnerVenues',methods=['GET'])
+
+@app.route('/getOwnerVenues', methods=['GET'])
 def getOwnerVenues():
     owner_id = request.args.get('ownerId')
-    db=get_db()
-    cursor=db.cursor()
+    db = get_db()
+    cursor = db.cursor()
     cursor.execute(
         "SELECT turfs.id, turfs.name, turfs.location, turf_sports.sport_id, sports.name AS sport_name "
         "FROM turfs "
@@ -390,28 +392,30 @@ def getOwnerVenues():
         "WHERE turfs.owner_id = %s",
         (owner_id,)
     )
-    print(owner_id)
-    venues=cursor.fetchall()
-    mergedData={}
-    for id,name,location,s_id,s_name in venues:
-        if(id in mergedData and s_id and s_name):
-            mergedData[id]['sports'].append({'sportId':s_id, 'sportName':s_name})
+
+    venues = cursor.fetchall()
+    mergedData = {}
+
+    for id, name, location, s_id, s_name in venues:
+        if id in mergedData and s_id and s_name:
+            mergedData[id]['sports'].append({'sportId': s_id, 'sportName': s_name})
         else:
-            mergedData[id]={
+            mergedData[id] = {
                 'id': id,
                 'name': name,
                 'location': location,
                 'sports': []
             }
-            if(s_id and s_name):
-                mergedData[id]['sports'].append({'sportId':s_id,'sportName':s_name})
-    owner_venues=[]
+
+            if s_id and s_name:
+                mergedData[id]['sports'].append({'sportId': s_id, 'sportName': s_name})
+
+    owner_venues = []
     for i in mergedData:
         owner_venues.append(mergedData[i])
-    
     cursor.close()
     db.close()
-    return owner_venues
+    return json.dumps(owner_venues)
 
 
 if __name__ == '__main__':
