@@ -37,7 +37,6 @@ function MyVenues() {
             },
         });
         console.log(response);
-
         return response.data;
     };
 
@@ -45,7 +44,7 @@ function MyVenues() {
         isLoading: isOwnerVenuesLoad,
         error: ownerVenuesError,
         data: ownerVenues,
-    } = useQuery(['getOwnerVenues'], getOwnerVenues);
+    } = useQuery(['getOwnerVenues', isOpen], getOwnerVenues);
 
     return (
         <>
@@ -93,8 +92,9 @@ function VenueCard({ venue }) {
                 {...styles.venueCard}
                 _hover={{ cursor: 'pointer' }}
             >
-                <Image src={dummyImg} alt="Card Image" />
-
+                <Box {...styles.imgBg}>
+                    <Image src={venue.coverImage ? `data:image/jpeg;base64,${venue.coverImage}` : dummyImg} alt="Card Image" {...styles.cardImg}/>
+                </Box>
                 <Box p="4">
                     <Text fontWeight="bold" fontSize="xl">
                         {venue.name}
@@ -116,7 +116,7 @@ function VenueCard({ venue }) {
 export default MyVenues;
 
 const styles = {
-    gridLayout :{
+    gridLayout: {
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '1rem',
     },
@@ -146,5 +146,18 @@ const styles = {
         boxShadow: "md",
         speed: 0.5,
         borderRadius: "lg",
+    },
+    imgBg: {
+        height: "300px",
+        // backgroundColor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth:1,
+    },
+    cardImg:{
+        objectFit:"contain",
+        maxHeight:"100%",
+        maxWidth:"100%"
     }
 };

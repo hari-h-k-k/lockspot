@@ -8,8 +8,8 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
-    Image, VStack
-
+    Image,
+    VStack,
 } from "@chakra-ui/react";
 import { Select, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
@@ -21,16 +21,17 @@ import {
     useToast
 } from "@chakra-ui/react";
 import { useState, useRef } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import {useSelector } from 'react-redux';
 
 function VenueModal({ setIsOpen }) {
+
+    const userDetails = useSelector(state => state.user);
 
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
     const [overview, setOverview] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const fileInputRef = useRef(null);
-    
     const [selectedSports, setSelectedSports] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
     // sportsList?sportsList:[{id:"1",name:"dummy"}]
@@ -77,6 +78,50 @@ function VenueModal({ setIsOpen }) {
         setAvailableOptions([...availableOptions, option]);
     };
 
+    const toast = useToast();
+    const showToast = (message) => {
+        toast({
+            title: "Submission Status",
+            description: message,
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+        });
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        
+        const payload = {
+            ownerId: userDetails.userId,
+            turfName: name,
+            location: location,
+            sports: JSON.stringify(selectedSports),
+            coverImage: selectedImage
+        };
+        console.log(JSON.stringify(payload));
+        axiosInstance({
+            method: 'post',
+            url: '/addVenue',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            data: payload
+        }).then(function (responseData) {
+            const response = responseData;
+            console.log(response);
+            if (response.statusText) {
+                showToast(response.data.message);
+            } else {
+                console.log('Request failed with status:', response.status);
+            }
+            handleClose();
+        }).catch(function (error) {
+            console.error(error);
+        });
+
+    };
+
     return (
         <>
 
@@ -87,7 +132,7 @@ function VenueModal({ setIsOpen }) {
                 <Stack spacing={4}>
                     <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
                     <Input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-                    <Input placeholder="Overview" value={overview} onChange={(e) => setOverview(e.target.value)} />
+                    {/* <Input placeholder="Overview" value={overview} onChange={(e) => setOverview(e.target.value)} /> */}
                     {/* <Box>
                         <Input type="file" accept="image/*" onChange={handleImageChange} />
                         {selectedImage && (
@@ -160,7 +205,7 @@ function VenueModal({ setIsOpen }) {
                 <Button colorScheme="red" mr={3} onClick={handleClose}>
                     Back
                 </Button>
-                <Button colorScheme="teal" onClick={handleClose}>Submit</Button>
+                <Button colorScheme="teal" onClick={handleSubmit}>Submit</Button>
             </ModalFooter>
         </>
 

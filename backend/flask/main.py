@@ -3,9 +3,10 @@ import json
 from flask import request, jsonify, Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
-
+import base64
 app = Flask(__name__)
 CORS(app)
+import io
 
 app.config['MYSQL_HOST'] = 'mysql'
 app.config['MYSQL_USER'] = 'root'
@@ -62,6 +63,7 @@ def create_tables():
             name VARCHAR(255),
             owner_id INT,
             location VARCHAR(255),
+            cover_image LONGBLOB,
             created_at TIMESTAMP,
             FOREIGN KEY (owner_id) REFERENCES users(id)
         )''',
@@ -282,17 +284,18 @@ def getTurfs():
 
 @app.route('/addVenue', methods=['POST'])
 def addVenue():
-    owner_id = request.json.get('ownerId')
-    turf_name = request.json.get('turfName')
-    location = request.json.get('location')
-    sports = request.json.get('sports')
+    owner_id = request.form.get('ownerId')
+    turf_name = request.form.get('turfName')
+    location = request.form.get('location')
+    sports = json.loads(request.form.get('sports'))
+    image = request.files['coverImage']
 
     db = get_db()
     cursor = db.cursor()
 
     try:
-        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, created_at) VALUES (%s, %s, %s, %s)'
-        insert_turf_values = (turf_name, owner_id, location, '2023-06-05 10:00:00',)
+        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image, created_at) VALUES (%s, %s, %s, %s, %s)'
+        insert_turf_values = (turf_name, owner_id, location, image.read(), '2023-06-05 10:00:00',)
         cursor.execute(insert_turf_query, insert_turf_values)
 
         db.commit()
@@ -300,7 +303,7 @@ def addVenue():
         turf_id = cursor.fetchone()[0]
 
         for sport in sports:
-            cursor.execute('SELECT id FROM sports WHERE name = %s', (sport,))
+            cursor.execute('SELECT id FROM sports WHERE id = %s', (sport['id'],))
             sport_id = cursor.fetchone()[0]
 
             insert_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
@@ -357,57 +360,57 @@ def updateVenue():
         cursor.close()
         db.close()
 
-
-@app.route('/getSports', methods=['GET'])
+@app.route('/getSports',methods=['GET'])
 def getSports():
-    db = get_db()
-    cursor = db.cursor()
-    get_sports_query = 'SELECT * FROM sports'
+    db=get_db()
+    cursor=db.cursor()
+    get_sports_query='SELECT * FROM sports'
     cursor.execute(get_sports_query)
-    sports = cursor.fetchall()
-    sports_json = []
+    sports=cursor.fetchall()
+    sports_json=[]
 
     for sport in sports:
-        sport_ele = {
-            'id': sport[0],
-            'name': sport[1]
+        sport_ele={
+            'id':sport[0],
+            'name':sport[1]
         }
         sports_json.append(sport_ele)
-
+    
     cursor.close()
     db.close()
     return json.dumps(sports_json)
 
-
-@app.route('/getOwnerVenues', methods=['GET'])
+@app.route('/getOwnerVenues',methods=['GET'])
 def getOwnerVenues():
     owner_id = request.args.get('ownerId')
-    db = get_db()
-    cursor = db.cursor()
+    db=get_db()
+    cursor=db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, turfs.location, turf_sports.sport_id, sports.name AS sport_name "
+        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, turf_sports.sport_id, sports.name AS sport_name "
         "FROM turfs "
         "LEFT JOIN turf_sports ON turfs.id = turf_sports.turf_id "
         "LEFT JOIN sports ON turf_sports.sport_id = sports.id "
         "WHERE turfs.owner_id = %s",
         (owner_id,)
     )
-    print(owner_id)
-    venues = cursor.fetchall()
-    mergedData = {}
-    for id, name, location, s_id, s_name in venues:
-        if id in mergedData and s_id and s_name:
-            mergedData[id]['sports'].append({'sportId': s_id, 'sportName': s_name})
+    venues=cursor.fetchall()
+    mergedData={}
+    for id,name,location,coverImage,s_id,s_name in venues:
+        if(id in mergedData and s_id and s_name):
+            mergedData[id]['sports'].append({'sportId':s_id, 'sportName':s_name})
         else:
-            mergedData[id] = {
+            mergedData[id]={
                 'id': id,
                 'name': name,
                 'location': location,
+                'coverImage': None,
                 'sports': []
             }
-            if s_id and s_name:
-                mergedData[id]['sports'].append({'sportId': s_id, 'sportName': s_name})
-    owner_venues = []
+            if(coverImage):
+                mergedData[id]['coverImage']=base64.b64encode(coverImage).decode('utf-8')
+            if(s_id and s_name):
+                mergedData[id]['sports'].append({'sportId':s_id,'sportName':s_name})
+    owner_venues=[]
     for i in mergedData:
         owner_venues.append(mergedData[i])
 
