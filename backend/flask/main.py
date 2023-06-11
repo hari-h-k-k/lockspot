@@ -8,7 +8,7 @@ import base64
 app = Flask(__name__)
 CORS(app)
 
-app.config['MYSQL_HOST'] = 'mysql'
+app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'atlantis'
@@ -431,4 +431,4 @@ if __name__ == '__main__':
     create_database()
     create_tables()
     insert_dummy_data()
-    app.run(host='0.0.0.0')
+    app.run()
