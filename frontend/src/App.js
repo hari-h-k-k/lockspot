@@ -4,6 +4,8 @@ import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 import Home from './components/home/Home.js';
 import Profile from './components/profile/Profile.js';
 import TurfDetails from "./components/turf/TurfDetails";
+import BasicMap from "./components/turf/Map.js";
+
 import { useSelector } from 'react-redux';
 import ChatGPT from "./chatGPT.js";
 
@@ -19,6 +21,7 @@ function App() {
                     <Route path="/accessories" element={<div>Accessories page</div>} />
                     <Route path="/profile" element={<PrivateRoute component={Profile} />} />
                     <Route path="/turfDetails" element={<PrivateRoute component={TurfDetails} />}/>
+                    <Route path="/showOnMap" element={<PrivateRoute component={BasicMap} />}/>
                 </Routes>
             </BrowserRouter>
             {/* <ChatGPT/>  */}

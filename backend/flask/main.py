@@ -248,7 +248,7 @@ def getTurfs():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, turfs.location, sports.name AS sport_name, reviews.review FROM turfs LEFT JOIN "
+        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, sports.name AS sport_name, reviews.review FROM turfs LEFT JOIN "
         "turf_sports ON turfs.id = turf_sports.turf_id LEFT JOIN sports ON turf_sports.sport_id = sports.id LEFT JOIN "
         "reviews ON turfs.id = reviews.turf_id WHERE location LIKE %s",
         ('%' + location + '%',))
@@ -261,8 +261,9 @@ def getTurfs():
         turf_id = turf[0]
         turf_name = turf[1]
         turf_location = turf[2]
-        sport = turf[3]
-        review = turf[4]
+        cover_image = turf[3]
+        sport = turf[4]
+        review = turf[5]
 
         if turf_id not in turfs_json:
             turfs_json[turf_id] = {
@@ -270,8 +271,11 @@ def getTurfs():
                 'name': turf_name,
                 'sports': [],
                 'location': turf_location,
+                'coverImage': None,
                 'reviews': []
             }
+        if(cover_image):
+            turfs_json[turf_id]['coverImage']=base64.b64encode(cover_image).decode('utf-8')
 
         turfs_json[turf_id]['sports'].append(sport)
         if review not in turfs_json[turf_id]['reviews']:

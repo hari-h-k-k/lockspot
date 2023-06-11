@@ -20,7 +20,7 @@ import {
     Stack,
     useToast
 } from "@chakra-ui/react";
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {useSelector } from 'react-redux';
 
 function VenueModal({ setIsOpen }) {
@@ -48,33 +48,29 @@ function VenueModal({ setIsOpen }) {
         setIsOpen(false);
     };
 
-    const getSportsList = async () => {
-        const response = await axiosInstance({
-            method: 'get',
-            url: '/getSports',
-        });
-        setAvailableOptions(response.data)
-        return response.data;
-    };
-
-    const {
-        isLoading: isSportsList,
-        error: sportsListError,
-        data: sportsList,
-    } = useQuery(['getSports'], getSportsList);
+    useEffect(() => {
+        const getSportsList = async () => {
+          try {
+            const response = await axiosInstance({
+                method: 'get',
+                url: '/getSports',
+            });
+            setAvailableOptions(response.data);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        getSportsList();
+      }, []);
     
     const handleSportSelect = (option) => {
-        if (!selectedSports.includes(option)) {
-            setSelectedSports([...selectedSports, option]);
-
-        }
+        setSelectedSports([...selectedSports, option]);
         setAvailableOptions(availableOptions.filter((item) => item !== option));
 
     };
 
     const handleRemoveOption = (option) => {
-        const updatedSelectedSports = selectedSports.filter((sport) => sport !== option);
-        setSelectedSports(updatedSelectedSports);
+        setSelectedSports(selectedSports.filter((sport) => sport !== option));
         setAvailableOptions([...availableOptions, option]);
     };
 

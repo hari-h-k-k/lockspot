@@ -3,7 +3,7 @@ import {Box, Image, Text,} from "@chakra-ui/react";
 import "./Turf.css"
 import dummyImg from "../../assets/images/Thumbnail1.avif";
 
-function TurfCard({name, sports, location, handleCardClick, turfKey}) {
+function TurfCard({venue, handleCardClick}) {
     const [isHovered, setIsHovered] = useState(false);
     const handleClick = (turfKey) => {
         handleCardClick(turfKey);
@@ -23,7 +23,7 @@ function TurfCard({name, sports, location, handleCardClick, turfKey}) {
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"
-            onClick={() => handleClick(turfKey)}
+            onClick={() => handleClick(venue.id)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             position="relative"
@@ -32,17 +32,17 @@ function TurfCard({name, sports, location, handleCardClick, turfKey}) {
             _hover={{cursor: 'pointer'}}
         >
             <Box backgroundColor="yellow.500" p="4" width="100%" height="100%">
-                <Image src={dummyImg} alt="Image" boxSize="40%" objectFit="contain"/>
+                <Image src={venue.coverImage ? `data:image/jpeg;base64,${venue.coverImage}` : dummyImg} alt="Image" boxSize="40%" objectFit="contain"/>
                 <Text fontSize="xl" fontWeight="bold">
-                    {name}
+                    {venue.name}
                 </Text>
                 <Text fontSize="md" color="gray.500">
-                    {location}
+                    {venue.location}
                 </Text>
                 <Text fontSize="md" color="gray.500">
                     Rating: 4.5
                 </Text>
-                {sports.map((sport, index) => (
+                {venue.sports.map((sport, index) => (
                     <Text key={index}>{sport}</Text>
                 ))}
             </Box>
