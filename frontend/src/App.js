@@ -7,7 +7,7 @@ import TurfDetails from "./components/turf/TurfDetails";
 import BasicMap from "./components/turf/Map.js";
 
 import { useSelector } from 'react-redux';
-import ChatGPT from "./chatGPT.js";
+import Lab from "./Lab.js";
 
 function App() {
 
@@ -24,7 +24,7 @@ function App() {
                     <Route path="/showOnMap" element={<PrivateRoute component={BasicMap} />}/>
                 </Routes>
             </BrowserRouter>
-            {/* <ChatGPT/>  */}
+            {/* <Lab/>  */}
         </>
     );
 };
