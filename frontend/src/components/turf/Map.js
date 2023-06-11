@@ -28,15 +28,15 @@ const BasicMap=()=>{
   return(
     <>
     <MapContainer
-      center={[51.505, -0.09]}
-      zoom={13}
+      center={[12.97, 77.59]}
+      zoom={15}
       style={{ height: '100vh', width: '100%' }}
     >
       <TileLayer
         url={osm.maptiler.url}
         attribution={osm.maptiler.attribution}
       />
-      <Marker position={[51.505, -0.09]}></Marker>
+      <Marker position={[12.97, 77.59]}></Marker>
     </MapContainer>
     </>
   );
