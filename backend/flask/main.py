@@ -4,11 +4,11 @@ from flask import request, jsonify, Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
 import base64
+
 app = Flask(__name__)
 CORS(app)
-import io
 
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_HOST'] = 'mysql'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'atlantis'
@@ -296,13 +296,17 @@ def addVenue():
 
     db = get_db()
     cursor = db.cursor()
+
     try:
-        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image, created_at) VALUES (%s, %s, %s, %s, %s)'
+        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image, created_at) VALUES (%s, %s, ' \
+                            '%s, %s, %s) '
         insert_turf_values = (turf_name, owner_id, location, image.read(), '2023-06-05 10:00:00',)
         cursor.execute(insert_turf_query, insert_turf_values)
+
         db.commit()
         cursor.execute("SELECT LAST_INSERT_ID()")
         turf_id = cursor.fetchone()[0]
+
         for sport in sports:
             cursor.execute('SELECT id FROM sports WHERE id = %s', (sport['id'],))
             sport_id = cursor.fetchone()[0]
@@ -361,60 +365,63 @@ def updateVenue():
         cursor.close()
         db.close()
 
-@app.route('/getSports',methods=['GET'])
+
+@app.route('/getSports', methods=['GET'])
 def getSports():
-    db=get_db()
-    cursor=db.cursor()
-    get_sports_query='SELECT * FROM sports'
+    db = get_db()
+    cursor = db.cursor()
+    get_sports_query = 'SELECT * FROM sports'
     cursor.execute(get_sports_query)
-    sports=cursor.fetchall()
-    sports_json=[]
+    sports = cursor.fetchall()
+    sports_json = []
 
     for sport in sports:
-        sport_ele={
-            'id':sport[0],
-            'name':sport[1]
+        sport_ele = {
+            'id': sport[0],
+            'name': sport[1]
         }
         sports_json.append(sport_ele)
-    
+
     cursor.close()
     db.close()
     return json.dumps(sports_json)
 
-@app.route('/getOwnerVenues',methods=['GET'])
+
+@app.route('/getOwnerVenues', methods=['GET'])
 def getOwnerVenues():
     owner_id = request.args.get('ownerId')
-    db=get_db()
-    cursor=db.cursor()
+    db = get_db()
+    cursor = db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, turf_sports.sport_id, sports.name AS sport_name "
+        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, turf_sports.sport_id, sports.name AS "
+        "sport_name "
         "FROM turfs "
         "LEFT JOIN turf_sports ON turfs.id = turf_sports.turf_id "
         "LEFT JOIN sports ON turf_sports.sport_id = sports.id "
         "WHERE turfs.owner_id = %s",
         (owner_id,)
     )
-    venues=cursor.fetchall()
-    mergedData={}
-    for id,name,location,coverImage,s_id,s_name in venues:
-        if(id in mergedData and s_id and s_name):
-            mergedData[id]['sports'].append({'sportId':s_id, 'sportName':s_name})
+    venues = cursor.fetchall()
+    mergedData = {}
+    for id, name, location, coverImage, s_id, s_name in venues:
+        if id in mergedData and s_id and s_name:
+            mergedData[id]['sports'].append({'sportId': s_id, 'sportName': s_name})
         else:
-            mergedData[id]={
+            mergedData[id] = {
                 'id': id,
                 'name': name,
                 'location': location,
                 'coverImage': None,
                 'sports': []
             }
-            if(coverImage):
-                mergedData[id]['coverImage']=base64.b64encode(coverImage).decode('utf-8')
-            if(s_id and s_name):
-                mergedData[id]['sports'].append({'sportId':s_id,'sportName':s_name})
-    owner_venues=[]
+            if coverImage:
+                mergedData[id]['coverImage'] = base64.b64encode(coverImage).decode('utf-8')
+            if s_id and s_name:
+                mergedData[id]['sports'].append({'sportId': s_id, 'sportName': s_name})
+    owner_venues = []
     for i in mergedData:
         owner_venues.append(mergedData[i])
-    
+
     cursor.close()
     db.close()
     return json.dumps(owner_venues)
@@ -424,4 +431,4 @@ if __name__ == '__main__':
     create_database()
     create_tables()
     insert_dummy_data()
-    app.run()
+    app.run(host='0.0.0.0')
