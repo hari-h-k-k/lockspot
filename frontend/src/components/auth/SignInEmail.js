@@ -26,7 +26,7 @@ const SignInEmail = ({handleClose}) => {
         });
     };
 
-    const {handleSubmit} = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const payload = {
