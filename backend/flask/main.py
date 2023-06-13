@@ -3,6 +3,7 @@ import json
 from flask import request, jsonify, Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
+import cryptography
 
 app = Flask(__name__)
 CORS(app)
@@ -83,6 +84,25 @@ def create_tables():
             user_id INT,
             FOREIGN KEY (turf_id) REFERENCES turfs(id),
             FOREIGN KEY (user_id) REFERENCES users(id)
+        )''',
+        '''CREATE TABLE IF NOT EXISTS bookings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            turf_id INT,
+            sport_id INT,
+            booking DATE,
+            start_time INT,
+            date_time INT,
+            FOREIGN KEY (turf_id) REFERENCES turfs(id),
+            FOREIGN KEY (sport_id) REFERENCES sports(id)
+        )''',
+        '''CREATE TABLE IF NOT EXISTS slots (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            turf_id INT,
+            sport_id INT,
+            start_time INT,
+            end_time INT,
+            FOREIGN KEY (turf_id) REFERENCES turfs(id),
+            FOREIGN KEY (sport_id) REFERENCES sports(id)
         )'''
     ]
 
@@ -171,6 +191,32 @@ def insert_dummy_data():
         ]
         insert_review_query = 'INSERT INTO reviews (review, turf_id, user_id) VALUES (%s, %s, %s)'
         cursor.executemany(insert_review_query, review_data)
+
+    cursor.execute('SELECT COUNT(*) FROM slots')
+    slots_count = cursor.fetchone()[0]
+
+    if slots_count == 0:
+        slots_data = [
+            (1, 1, 1, 10, 14),
+            (2, 1, 2, 16, 20),
+            (3, 1, 3, 11, 13)
+        ]
+        insert_slots_query = 'INSERT INTO slots (id, turf_id, sport_id, start_time, end_time) VALUES (%s, %s, %s, %s, %s)'
+        cursor.executemany(insert_slots_query, slots_data)
+
+    cursor.execute('SELECT COUNT(*) FROM bookings')
+    bookings_count = cursor.fetchone()[0]
+
+    if bookings_count == 0:
+        bookings_data = [
+            (1, 1, 1, '2023-06-12', 10, 11),
+            (2, 1, 2, '2023-06-13', 16, 17),
+            (3, 1, 3, '2023-06-14', 12, 13),
+            (4, 1, 1, '2023-06-15', 13, 14),
+            (5, 1, 2, '2023-06-16', 19, 20)
+        ]
+        insert_bookings_query = 'INSERT INTO bookings (id, turf_id, sport_id, booking, start_time, date_time) VALUES (%s, %s, %s, %s, %s, %s)'
+        cursor.executemany(insert_bookings_query, bookings_data)
 
     db.commit()
     cursor.close()
@@ -416,6 +462,105 @@ def getOwnerVenues():
     cursor.close()
     db.close()
     return json.dumps(owner_venues)
+
+
+# @app.route('/getTurfDetails', methods=['GET'])
+# def getTurfDetails():
+#     venue_id = request.args.get('venueId')
+#     print(venue_id)
+#     db = get_db()
+#     cursor = db.cursor()
+#     cursor.execute(
+#         "SELECT slots.turf_id, sports.name, bookings.booking as date, slots.start_time, slots.end_time, "
+#         "bookings.start_time AS slot_start FROM bookings JOIN slots ON bookings.sport_id = slots.sport_id JOIN sports "
+#         "ON slots.sport_id = sports.id WHERE slots.turf_id = %s",
+#         (venue_id,)
+#     )
+#
+#     timings = cursor.fetchall()
+#     cursor.close()
+#     db.close()
+#     merged_data = {}
+#
+#     for time in timings:
+#         sport_name = time[1]
+#         date = str(time[2])
+#         start_time = time[3]
+#         end_time = time[4]
+#         slot_start = time[5]
+#
+#         if sport_name not in merged_data:
+#             merged_data[sport_name] = {
+#                 "timings": set(),
+#                 "booking": []
+#             }
+#
+#         merged_data[sport_name]["timings"].update(range(start_time, end_time))
+#
+#         booking = {
+#             "date": date,
+#             "slot": [slot_start]
+#         }
+#
+#         existing_booking = next(
+#             (b for b in merged_data[sport_name]["booking"] if b["date"] == date), None
+#         )
+#
+#         if existing_booking:
+#             existing_booking["slot"].append(slot_start)
+#         else:
+#             merged_data[sport_name]["booking"].append(booking)
+#
+#     for sport_data in merged_data.values():
+#         sport_data["timings"] = sorted(sport_data["timings"])
+#
+#     merged_data_str = json.dumps(merged_data)
+#
+#     return merged_data_str
+
+@app.route('/getTurfDetails', methods=['GET'])
+def getTurfDetails():
+    venue_id = request.args.get('venueId')
+    print(venue_id)
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "SELECT slots.turf_id, sports.name, bookings.booking as date, slots.start_time, slots.end_time, "
+        "bookings.start_time AS slot_start FROM bookings JOIN slots ON bookings.sport_id = slots.sport_id JOIN sports "
+        "ON slots.sport_id = sports.id WHERE slots.turf_id = %s",
+        (venue_id,)
+    )
+
+    timings = cursor.fetchall()
+    cursor.close()
+    db.close()
+    merged_data = {}
+
+    for time in timings:
+        sport_name = time[1]
+        date = str(time[2])
+        start_time = time[3]
+        end_time = time[4]
+        slot_start = time[5]
+
+        if sport_name not in merged_data:
+            merged_data[sport_name] = {
+                "timings": set(),
+            }
+
+        merged_data[sport_name]["timings"].update(range(start_time, end_time))
+
+        if date not in merged_data[sport_name]:
+            merged_data[sport_name][date] = [slot_start]
+        else:
+            merged_data[sport_name][date].append(slot_start)
+
+    for sport_data in merged_data.values():
+        sport_data["timings"] = sorted(sport_data["timings"])
+
+    merged_data_str = json.dumps(merged_data)
+
+    return merged_data_str
 
 
 if __name__ == '__main__':
