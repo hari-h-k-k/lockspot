@@ -55,7 +55,7 @@ const SignInEmail = ({handleClose}) => {
             } else {
                 console.log('Request failed with status:', response.status);
             }
-// Enter key login
+
             setEmail('');
             setPassword('');
             dispatch(showLogIn(DIALOG_DEFAULT));
@@ -66,6 +66,13 @@ const SignInEmail = ({handleClose}) => {
 
     };
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSubmit(event).then(() => {
+            });
+        }
+    };
+
     return (
         <>
             <ModalHeader>Sign In</ModalHeader>
@@ -73,8 +80,9 @@ const SignInEmail = ({handleClose}) => {
 
             <ModalBody>
                 <Stack spacing={4}>
-                    <Input placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)}/>
-                    <Input placeholder="Password" type="password" value={password}
+                    <Input placeholder="Email" onKeyDown={handleKeyDown} value={email}
+                           onChange={(event) => setEmail(event.target.value)}/>
+                    <Input placeholder="Password" onKeyDown={handleKeyDown} type="password" value={password}
                            onChange={(event) => setPassword(event.target.value)}/>
                 </Stack>
             </ModalBody>

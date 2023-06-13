@@ -5,18 +5,27 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {Provider} from "react-redux";
 import store from './redux/store';
-import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import {ChakraProvider} from "@chakra-ui/react";
+import createCache from '@emotion/cache';
+import {CacheProvider} from '@emotion/react';
+import {QueryClient, QueryClientProvider} from 'react-query';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient();
+const emotionCache = createCache({
+    key: 'emotion-css-cache',
+    prepend: true, // ensures styles are prepended to the <head>, instead of appended
+});
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-      </QueryClientProvider>
+    <React.StrictMode>
+        <Provider store={store}>
+            <QueryClientProvider client={queryClient}>
+                <CacheProvider value={emotionCache}>
+                    <ChakraProvider>
+                        <App/>
+                    </ChakraProvider>
+                </CacheProvider>
+            </QueryClientProvider>
     </Provider>
   </React.StrictMode>
 );

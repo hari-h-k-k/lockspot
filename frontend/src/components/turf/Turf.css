@@ -11,3 +11,61 @@
     text-align: center;
     padding-bottom: inherit;
 }
+
+.selected {
+    color: aqua;
+    font-size: 1.2em;
+    position: absolute;
+    left: 10%;
+    top: 50vh;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+}
+
+.daysTab {
+    position: absolute;
+    left: 10%;
+    top: 50vh;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+}
+
+.dayTab {
+    text-align: left;
+    border: 0;
+    justify-content: left;
+    padding: 0 0 15px;
+    font-size: xx-large;
+}
+
+.dayTab:active {
+    color: cyan;
+    font-size: 1.2em;
+}
+
+.timing {
+    background-color: greenyellow;
+    border-radius: 50px;
+    width: 70%;
+    color: black;
+    stroke-width: 5px;
+    -webkit-text-stroke-color: black;
+}
+
+.booked {
+    background-color: darkred;
+    border-radius: 50px;
+    width: 70%;
+    color: black;
+    stroke-width: 5px;
+    -webkit-text-stroke-color: black;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dropdown {
+    width: 30%;
+    float: right;
+}

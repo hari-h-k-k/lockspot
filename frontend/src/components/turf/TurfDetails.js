@@ -1,12 +1,11 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import NavBar from '../navigation/Navbar.js';
-import IconImg from "../../assets/images/Thumbnail1.avif";
 import MapImg from "../../assets/images/Gmap.png";
 import BgImg from '../../assets/images/ProfileBg.jpg';
-import { useNavigate } from "react-router-dom";
 
-import { Box, Text, Tab, TabList, TabPanel, TabPanels, Tabs, Button, Image, Flex, Center, } from '@chakra-ui/react';
+import {Box, Button, Flex, Tab, TabList, TabPanel, TabPanels, Tabs, Text} from '@chakra-ui/react';
+
 const TurfOverview = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -14,51 +13,45 @@ const TurfOverview = () => {
     return (
         <div style={detailStyles.detailsDiv}>
 
-            <NavBar />
+            <NavBar/>
 
-            {/* <Box height="20vh"
-             width="20vh" 
-             backgroundColor="red" 
-             position="absolute" 
-             top="20vh" 
-             left="5%" 
-             backgroundImage={IconImg}
-             backgroundSize='cover'
-            overflow='auto'></Box> */}
+            <Box
+                height="20vh"
+                width="20vh"
+                backgroundColor="red"
+                position="absolute"
+                top="25vh"
+                left="10%"
+                backgroundSize="cover"
+                overflow="auto"
+            >
 
+            </Box>
             <div style={detailStyles.mapDiv}>
                 {/* Your div content */}
 
                 <Flex justifyContent="flex-end" alignItems="flex-end" mt={10}>
                     <Button {...detailStyles.mapButton} onClick={()=>{navigate('/showOnMap')}}>Show on Map</Button>
-                    <Button {...detailStyles.mapButton}>Book Now</Button>
+                    <Button {...detailStyles.mapButton} onClick={() => navigate('/turfBooking', {state: {turfKey}})}>Book
+                        Now</Button>
                 </Flex>
             </div>
 
-            <Box p={4}>
-                <Text mr={4} mt={4} sx={{ textAlignLast: "center" }}>
+            <Box p={4} sx={{width: "70%", float: "right"}}>
+                <Text mr={4} mt={4} sx={{textAlignLast: "center"}}>
                     Venue Name
                 </Text>
 
                 <Tabs isLazy isFitted variant="enclosed" mt={4}>
                     <TabList justifyContent="center">
-                        <Tab>Overview</Tab>
-                        <Tab>Reviews</Tab>
                         <Tab>Gallery</Tab>
+                        <Tab>Reviews</Tab>
                     </TabList>
 
                     <TabPanels>
                         <TabPanel>
-                            <Box mt={4} mx="auto" maxW="90%">
-                                <Button colorScheme="teal" mr={2} onClick={() => navigate("/events")}>
-                                    Add a venue
-                                </Button>
-                            </Box>
-                        </TabPanel>
-                        <TabPanel>
                             <Box mt={4} mx="auto" maxW="80%">
                                 {/* Content for Tab 2 */}
-
 
 
                             </Box>
@@ -111,6 +104,6 @@ const detailStyles = {
     menuButton: {
         colorScheme: 'teal',
         mr: 2,
-        _hover: { bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' },
+        _hover: {bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)'},
     }
 };

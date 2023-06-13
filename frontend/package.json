@@ -5,6 +5,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.1",
+    "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@reduxjs/toolkit": "^1.9.5",
@@ -15,6 +16,7 @@
     "framer-motion": "^10.12.16",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",
+    "react-datepicker": "^4.12.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
     "react-query": "^3.39.3",
