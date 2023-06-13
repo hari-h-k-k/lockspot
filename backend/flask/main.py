@@ -464,60 +464,6 @@ def getOwnerVenues():
     return json.dumps(owner_venues)
 
 
-# @app.route('/getTurfDetails', methods=['GET'])
-# def getTurfDetails():
-#     venue_id = request.args.get('venueId')
-#     print(venue_id)
-#     db = get_db()
-#     cursor = db.cursor()
-#     cursor.execute(
-#         "SELECT slots.turf_id, sports.name, bookings.booking as date, slots.start_time, slots.end_time, "
-#         "bookings.start_time AS slot_start FROM bookings JOIN slots ON bookings.sport_id = slots.sport_id JOIN sports "
-#         "ON slots.sport_id = sports.id WHERE slots.turf_id = %s",
-#         (venue_id,)
-#     )
-#
-#     timings = cursor.fetchall()
-#     cursor.close()
-#     db.close()
-#     merged_data = {}
-#
-#     for time in timings:
-#         sport_name = time[1]
-#         date = str(time[2])
-#         start_time = time[3]
-#         end_time = time[4]
-#         slot_start = time[5]
-#
-#         if sport_name not in merged_data:
-#             merged_data[sport_name] = {
-#                 "timings": set(),
-#                 "booking": []
-#             }
-#
-#         merged_data[sport_name]["timings"].update(range(start_time, end_time))
-#
-#         booking = {
-#             "date": date,
-#             "slot": [slot_start]
-#         }
-#
-#         existing_booking = next(
-#             (b for b in merged_data[sport_name]["booking"] if b["date"] == date), None
-#         )
-#
-#         if existing_booking:
-#             existing_booking["slot"].append(slot_start)
-#         else:
-#             merged_data[sport_name]["booking"].append(booking)
-#
-#     for sport_data in merged_data.values():
-#         sport_data["timings"] = sorted(sport_data["timings"])
-#
-#     merged_data_str = json.dumps(merged_data)
-#
-#     return merged_data_str
-
 @app.route('/getTurfDetails', methods=['GET'])
 def getTurfDetails():
     venue_id = request.args.get('venueId')
@@ -560,6 +506,7 @@ def getTurfDetails():
 
     merged_data_str = json.dumps(merged_data)
 
+    print(merged_data_str)
     return merged_data_str
 
 
