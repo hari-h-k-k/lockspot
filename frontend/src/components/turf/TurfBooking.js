@@ -11,6 +11,7 @@ import {
     Flex,
     Grid,
     Heading,
+    Select,
     Tab,
     TabList,
     Tabs,
@@ -234,7 +235,17 @@ function TurfBooking() {
                 </Tabs>
 
                 <Container sx={{width: "70%", float: "right", height: "60vh"}} maxW="container.xl" p="2rem">
-                    <Heading sx={{textAlign: "center", marginBottom: "30px"}}>Timings</Heading>
+                    <div className="dropdown">
+                        <Select value={selectedSport} onChange={(e) => setSelectedSport(e.target.value)}>
+                            {displayData &&
+                                Object.keys(displayData).map((sport) => (
+                                    <option key={sport} value={sport}>
+                                        {sport}
+                                    </option>
+                                ))}
+                        </Select>
+                    </div>
+                    <Heading sx={{textAlign: "left", marginBlock: "30px"}}>Timings</Heading>
 
                     <Grid sx={gridLayout}>
                         {displayData &&

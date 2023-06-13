@@ -65,6 +65,7 @@
     cursor: not-allowed;
 }
 
-/*.booked:hover {*/
-/*    cursor: default;*/
-/*}*/
+.dropdown {
+    width: 30%;
+    float: right;
+}
