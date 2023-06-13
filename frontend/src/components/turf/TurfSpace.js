@@ -60,10 +60,8 @@ function TurfSpace({turfLocation}) {
                     <Grid {...gridLayout}>
                         {Object.keys(turfList).map((key) => {
                             const turf = turfList[key];
-                            const {id, name, sports, location} = turf;
                             return (
-                                <TurfCard name={name} sports={sports} location={location}
-                                          handleCardClick={handleCardClick} turfKey={id}/>
+                                <TurfCard venue={turf} handleCardClick={handleCardClick}/>
                             );
                         })}
 

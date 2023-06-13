@@ -31,7 +31,7 @@ const TurfOverview = () => {
                 {/* Your div content */}
 
                 <Flex justifyContent="flex-end" alignItems="flex-end" mt={10}>
-                    <Button {...detailStyles.mapButton}>Show on Map</Button>
+                    <Button {...detailStyles.mapButton} onClick={()=>{navigate('/showOnMap')}}>Show on Map</Button>
                     <Button {...detailStyles.mapButton} onClick={() => navigate('/turfBooking', {state: {turfKey}})}>Book
                         Now</Button>
                 </Flex>

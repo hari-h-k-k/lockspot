@@ -2,10 +2,12 @@ import './App.css';
 import {Button, Center, Flex} from "@chakra-ui/react";
 import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 import Home from './components/home/Home.js';
-import TurfDetails from "./components/turf/TurfDetails";
 import {useSelector} from 'react-redux';
+import TurfDetails from "./components/turf/TurfDetails";
 import ProfileIndex from "./components/profile/ProfileIndex.js";
 import TurfBooking from "./components/turf/TurfBooking";
+import BasicMap from "./components/turf/Map.js";
+import Lab from "./Lab.js";
 
 function App() {
 
@@ -20,9 +22,10 @@ function App() {
                     <Route path="/profile" element={<PrivateRoute component={ProfileIndex}/>}/>
                     <Route path="/turfDetails" element={<PrivateRoute component={TurfDetails}/>}/>
                     <Route path="/turfBooking" element={<PrivateRoute component={TurfBooking}/>}/>
+                    <Route path="/showOnMap" element={<PrivateRoute component={BasicMap} />}/>
                 </Routes>
             </BrowserRouter>
-            {/* <ChatGPT/>  */}
+            {/* <Lab/>  */}
         </>
     );
 };
