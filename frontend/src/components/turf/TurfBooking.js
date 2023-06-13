@@ -1,5 +1,22 @@
-import React, {useEffect, useState} from "react";
-import {Box, Button, Container, Grid, Heading, Tab, TabList, Tabs} from "@chakra-ui/react";
+import React, {useEffect, useRef} from "react";
+import {
+    Box,
+    Button,
+    Container,
+    Drawer,
+    DrawerBody,
+    DrawerContent,
+    DrawerHeader,
+    DrawerOverlay,
+    Flex,
+    Grid,
+    Heading,
+    Tab,
+    TabList,
+    Tabs,
+    Text,
+    useDisclosure
+} from "@chakra-ui/react";
 import BgImg from "../../assets/images/ProfileBg.jpg";
 import NavBar from "../navigation/Navbar";
 import "./Turf.css"
@@ -9,12 +26,12 @@ import {useLocation} from "react-router-dom";
 
 function TurfBooking() {
 
-    const [slots, setSlots] = React.useState(null)
+    const [collectedData, setCollectedData] = React.useState(null)
     const [displayData, setDisplayData] = React.useState(null)
     const [selectedSport, setSelectedSport] = React.useState()
     const [selectedDay, setSelectedDay] = React.useState()
-    const [selectedSlots, setSelectedSlots] = React.useState()
-    const [currentDate] = useState(new Date());
+    const UIRef = useRef(null);
+    const {onClose} = useDisclosure()
 
     const location = useLocation();
     const turfKey = location.state?.turfKey;
@@ -29,7 +46,6 @@ function TurfBooking() {
                 venueId: turfKey
             }
         });
-        setSlots(response.data)
         return response.data;
     };
 
@@ -41,7 +57,7 @@ function TurfBooking() {
 
 
     useEffect(() => {
-        setSlots(responseData)
+        setCollectedData(responseData)
     }, [responseData]);
 
     const getWeekDates = () => {
@@ -66,12 +82,12 @@ function TurfBooking() {
     const displayedDays = days.slice(currentDayIndex).concat(days.slice(0, currentDayIndex));
 
     useEffect(() => {
-        if (typeof slots === 'undefined' || slots === null) {
+        if (typeof collectedData === 'undefined' || collectedData === null) {
             return;
         }
 
         const transformedData = {};
-        const keys = Object.keys(slots)
+        const keys = Object.keys(collectedData)
         for (let i = 0; i < keys.length; i++) {
 
             transformedData[keys.at(i)] = {};
@@ -80,23 +96,23 @@ function TurfBooking() {
                 let date = weekDates[j].toLocaleString('en-UK', {day: '2-digit', month: '2-digit'})
 
                 transformedData[keys[i]][`${displayedDays[j]} ${date}`] = {
-                    timings: slots[keys[i]]['timings'],
+                    timings: collectedData[keys[i]]['timings'],
                     slots: {}
                 };
 
                 const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
                 const formattedDate = weekDates[j].toLocaleDateString('en-CA', options);
 
-                if (slots[keys[i]][formattedDate] !== null) {
+                if (collectedData[keys[i]][formattedDate] !== null) {
                     if (!transformedData[keys[i]][`${displayedDays[j]} ${date}`]) {
                         transformedData[keys[i]][`${displayedDays[j]} ${date}`] = {
-                            timings: slots[keys[i]]['timings'],
+                            timings: collectedData[keys[i]]['timings'],
                             slots: {}
                         };
                     }
 
                     transformedData[keys[i]][`${displayedDays[j]} ${date}`]['slots'] = {
-                        ...slots[keys[i]][formattedDate]
+                        ...collectedData[keys[i]][formattedDate]
                     };
                 }
             }
@@ -109,7 +125,7 @@ function TurfBooking() {
         console.log(transformedData)
         setSelectedSport(keys[0])
         setSelectedDay(`${selectedTab} ${date}`)
-    }, [slots]);
+    }, [collectedData]);
 
     const gridLayout = {
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -126,9 +142,67 @@ function TurfBooking() {
         setSelectedDay(formattedDate);
     };
 
-    const handleButtonClick = (event) => {
-        console.log("Clicked")
-    }
+    const [selectedSlots, setSelectedSlots] = React.useState(null)
+    const handleButtonClick = (timingValue, selectedDay, selectedSport) => {
+
+        const selectedDayFirstWord = selectedDay.split(' ')[0];
+        const selectedIndex = displayedDays.findIndex((day) => day.startsWith(selectedDayFirstWord));
+        const fullDate = weekDates[selectedIndex].toLocaleString('en-UK', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+
+        console.log(selectedSport, timingValue, fullDate);
+
+        setSelectedSlots((prevSelectedSlots) => {
+            const newSelectedSlots = {...prevSelectedSlots};
+
+            if (!newSelectedSlots[selectedSport]) {
+                newSelectedSlots[selectedSport] = {};
+            }
+
+            if (!newSelectedSlots[selectedSport][fullDate]) {
+                newSelectedSlots[selectedSport][fullDate] = [];
+            }
+
+            newSelectedSlots[selectedSport][fullDate].push(timingValue);
+
+            return newSelectedSlots;
+        });
+    };
+
+    const onOpen = () => {
+        UIRef.current.focus();
+    };
+
+    const handleRemoveSlot = (selectedSport, fullDate, timingValue) => {
+        setSelectedSlots((prevSelectedSlots) => {
+            const newSelectedSlots = {...prevSelectedSlots};
+
+            if (
+                newSelectedSlots[selectedSport] &&
+                newSelectedSlots[selectedSport][fullDate]
+            ) {
+                const timingValues = newSelectedSlots[selectedSport][fullDate];
+                const index = timingValues.indexOf(timingValue);
+
+                if (index !== -1) {
+                    timingValues.splice(index, 1);
+
+                    if (timingValues.length === 0) {
+                        delete newSelectedSlots[selectedSport][fullDate];
+
+                        if (Object.keys(newSelectedSlots[selectedSport]).length === 0) {
+                            delete newSelectedSlots[selectedSport];
+                        }
+                    }
+                }
+            }
+
+            return Object.keys(newSelectedSlots).length > 0 ? newSelectedSlots : null;
+        });
+    };
 
     return (
         <>
@@ -166,17 +240,51 @@ function TurfBooking() {
                         {displayData &&
                             displayData[selectedSport][selectedDay].timings.map(timingValue => {
                                 const isSlotValue = Object.values(displayData[selectedSport][selectedDay].slots).includes(timingValue);
-                                const buttonClassName = isSlotValue ? "booked" : "timing";
-                                const buttonProps = isSlotValue ? {disabled: true} : {onClick: () => handleButtonClick(timingValue)};
-
-                                return (
-                                    <Button key={timingValue} className={buttonClassName} {...buttonProps}>
-                                        {timingValue} - {timingValue + 1}
-                                    </Button>
-                                );
+                                if (isSlotValue) {
+                                    return (
+                                        <Button key={timingValue} className="booked" disabled={true}>
+                                            {timingValue} - {timingValue + 1}
+                                        </Button>
+                                    );
+                                } else {
+                                    return (
+                                        <Button key={timingValue} className="timing"
+                                                onClick={() => handleButtonClick(timingValue, selectedDay, selectedSport)}>
+                                            {timingValue} - {timingValue + 1}
+                                        </Button>
+                                    );
+                                }
                             })}
                     </Grid>
                 </Container>
+                <Drawer placement="bottom" onClose={onClose} isOpen={selectedSlots !== null} trapFocus={false}
+                        finalFocusRef={UIRef} onOpen={onOpen}>
+                    <DrawerOverlay/>
+                    <DrawerContent>
+                        <DrawerHeader borderBottomWidth="1px">Basic Drawer</DrawerHeader>
+                        <DrawerBody>
+                            {selectedSlots &&
+                                Object.entries(selectedSlots).map(([selectedSport, sportData]) => (
+                                    Object.entries(sportData).map(([fullDate, timingValues]) => (
+                                        timingValues.map((timingValue, index) => (
+                                            <Flex key={index} alignItems="center" justifyContent="space-between"
+                                                  marginBottom="1rem">
+                                                <Box>
+                                                    <Text>{selectedSport}</Text>
+                                                    <Text>{fullDate}</Text>
+                                                    <Text>{timingValue}</Text>
+                                                </Box>
+                                                <Button
+                                                    onClick={() => handleRemoveSlot(selectedSport, fullDate, timingValue)}>
+                                                    Remove
+                                                </Button>
+                                            </Flex>
+                                        ))
+                                    ))
+                                ))}
+                        </DrawerBody>
+                    </DrawerContent>
+                </Drawer>
             </div>
         </>
     );

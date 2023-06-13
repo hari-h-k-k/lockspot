@@ -61,8 +61,10 @@
     color: black;
     stroke-width: 5px;
     -webkit-text-stroke-color: black;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.booked:hover {
-    cursor: default;
-}
+/*.booked:hover {*/
+/*    cursor: default;*/
+/*}*/
