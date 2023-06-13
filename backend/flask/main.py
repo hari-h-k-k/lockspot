@@ -294,11 +294,17 @@ def getTurfs():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, sports.name AS sport_name, reviews.review FROM turfs LEFT JOIN "
-        "turf_sports ON turfs.id = turf_sports.turf_id LEFT JOIN sports ON turf_sports.sport_id = sports.id LEFT JOIN "
-        "reviews ON turfs.id = reviews.turf_id WHERE location LIKE %s",
+        "SELECT turfs.id, turfs.name, location, turfs.cover_image, sports.name FROM turfs LEFT JOIN "
+        "turf_sports ON turfs.id = turf_sports.turf_id LEFT JOIN sports ON turf_sports.sport_id = sports.id WHERE "
+        "location LIKE %s",
         ('%' + location + '%',))
     turfs = cursor.fetchall()
+
+    cursor.execute(
+        "SELECT turfs.id, turfs.name, turfs.location, reviews.review FROM turfs LEFT JOIN reviews ON turfs.id = "
+        "reviews.turf_id WHERE location LIKE %s",
+        ('%' + location + '%',))
+    reviews = cursor.fetchall()
     cursor.close()
     db.close()
     turfs_json = {}
@@ -309,7 +315,6 @@ def getTurfs():
         turf_location = turf[2]
         cover_image = turf[3]
         sport = turf[4]
-        review = turf[5]
 
         if turf_id not in turfs_json:
             turfs_json[turf_id] = {
@@ -320,12 +325,17 @@ def getTurfs():
                 'coverImage': None,
                 'reviews': []
             }
-        if(cover_image):
-            turfs_json[turf_id]['coverImage']=base64.b64encode(cover_image).decode('utf-8')
+        if cover_image:
+            turfs_json[turf_id]['coverImage'] = base64.b64encode(cover_image).decode('utf-8')
 
         turfs_json[turf_id]['sports'].append(sport)
-        if review not in turfs_json[turf_id]['reviews']:
-            turfs_json[turf_id]['reviews'].append(review)
+
+    for review in reviews:
+        turf_id = review[0]
+        review_text = review[3]
+
+        if turf_id in turfs_json:
+            turfs_json[turf_id]['reviews'].append(review_text)
 
     turfs_json_str = json.dumps(turfs_json)
 
