@@ -294,7 +294,7 @@ def getTurfs():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT turfs.id, turfs.name, location, turfs.cover_image, sports.name FROM turfs LEFT JOIN "
+        "SELECT turfs.id, turfs.name, turfs.location, turfs.cover_image, sports.name AS sport_name FROM turfs LEFT JOIN "
         "turf_sports ON turfs.id = turf_sports.turf_id LEFT JOIN sports ON turf_sports.sport_id = sports.id WHERE "
         "location LIKE %s",
         ('%' + location + '%',))
