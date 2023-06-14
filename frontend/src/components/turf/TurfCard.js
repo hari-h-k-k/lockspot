@@ -2,6 +2,12 @@ import React, {useState} from "react";
 import {Box, Image, Text,} from "@chakra-ui/react";
 import "./Turf.css"
 import dummyImg from "../../assets/images/Thumbnail1.avif";
+import {shuffle} from 'lodash';
+import {FaSwimmer} from "react-icons/fa";
+import {IoMdFootball} from "react-icons/io";
+import {GiBasketballBasket, GiPoolTableCorner, GiShuttlecock, GiTennisRacket} from "react-icons/gi";
+import {MdSportsCricket} from "react-icons/md";
+import {Icon} from "@chakra-ui/icons";
 
 function TurfCard({venue, handleCardClick}) {
     const [isHovered, setIsHovered] = useState(false);
@@ -24,49 +30,82 @@ function TurfCard({venue, handleCardClick}) {
         >
             <Box className="frontBox"
                  maxW="md"
-                 borderWidth="1px"
-                 borderRadius="lg"
-                 overflow="hidden"
                  onClick={() => handleClick(venue.id)}
-                 position="relative"
                  transform={isHovered ? 'rotateY(180deg)' : 'none'}
                  transition="transform 0.5s ease"
                  _hover={{cursor: 'pointer'}}
             >
-                <Box backgroundColor="yellow.500" p="4" width="100%" height="100%">
-                    <div>
-                        <Image src={venue.coverImage ? `data:image/jpeg;base64,${venue.coverImage}` : dummyImg}
-                               alt="Image"
-                               boxSize="40%" objectFit="contain"/>
+                <Box className="frontDisplayBox">
+
+                    <Image src={venue.coverImage ? `data:image/jpeg;base64,${venue.coverImage}` : dummyImg}
+                           alt="Image"
+                           className="turfCardThumbnail"
+                           boxSize="40%" objectFit="contain"/>
+
+                    <div style={{paddingInline: "5%"}}>
+                        <Text fontSize="xl" fontWeight="bold">
+                            {venue.name}
+                        </Text>
+
+                        <Text fontSize="md" color="#e8eeee">
+                            {venue.location}
+                        </Text>
+
                     </div>
-                    <Text fontSize="xl" fontWeight="bold">
-                        {venue.name}
+
+                    <Text style={{textAlign: "center", marginBlock: "15px"}} fontSize="sm">
+                        Click to see more...
                     </Text>
-                    <Text fontSize="md" color="gray.500">
-                        {venue.location}
-                    </Text>
-                    <Text fontSize="md" color="gray.500">
-                        Rating: 4.5
-                    </Text>
-                    {venue.sports.map((sport, index) => (
-                        <Text key={index}>{sport}</Text>
-                    ))}
+
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                        {shuffle(venue.sports)
+                            .slice(0, 3)
+                            .map((sport, index) => {
+                                let sportIcon;
+
+                                if (sport === 'Football') {
+                                    sportIcon = <Icon as={IoMdFootball} style={{height: "50px", width: "50px"}}/>;
+                                } else if (sport === 'Basketball') {
+                                    sportIcon = <Icon as={GiBasketballBasket} style={{height: "50px", width: "50px"}}/>;
+                                } else if (sport === 'Tennis') {
+                                    sportIcon = <Icon as={GiTennisRacket} style={{height: "50px", width: "50px"}}/>;
+                                } else if (sport === 'Swimming') {
+                                    sportIcon = <Icon as={FaSwimmer} style={{height: "50px", width: "50px"}}/>;
+                                } else if (sport === 'Cricket') {
+                                    sportIcon = <Icon as={MdSportsCricket} style={{height: "50px", width: "50px"}}/>;
+                                } else if (sport === 'Badminton') {
+                                    sportIcon = <Icon as={GiShuttlecock} style={{height: "50px", width: "50px"}}/>;
+                                } else if (sport === 'Snooker') {
+                                    sportIcon = <Icon as={GiPoolTableCorner} style={{height: "50px", width: "50px"}}/>;
+                                } else {
+                                    sportIcon = <Text>{sport}</Text>;
+                                }
+
+                                return (
+                                    <div
+                                        key={index}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            margin: '0.5rem',
+                                            flex: '1',
+                                            flexBasis: '33%',
+                                            flexDirection: 'column'
+                                        }}
+                                    >
+                                        <div>
+                                            {sportIcon}
+                                        </div>
+                                        <div>{sport}</div>
+                                    </div>
+                                );
+                            })}
+                    </div>
                 </Box>
 
                 {isHovered && (
-                    <Box className="backBox"
-                         p="4"
-                         backgroundColor="blue.500"
-                         color="white"
-                         position="absolute"
-                         top="0"
-                         left="0"
-                         width="100%"
-                         height="100%"
-                         display="flex"
-                         flexDirection="column"
-                         justifyContent="center"
-                         alignItems="center"
+                    <Box className="backDisplayBox"
                          transform="rotateY(180deg)"
                     >
                         <Text fontSize="lg" fontWeight="bold" textAlign="center">
@@ -75,8 +114,8 @@ function TurfCard({venue, handleCardClick}) {
                         <Text fontSize="md" textAlign="center">
                             Additional Information
                         </Text>
-                    </Box>
-                )}
+                    </Box>)
+                }
             </Box>
         </div>
     );
