@@ -1,7 +1,6 @@
 .turfPage {
     background-image: url('../../assets/images/TurfBackground.jpg');
     width: 100%;
-    height: 1000px;
     background-size: cover;
     background-position: center;
     overflow: auto;
@@ -10,6 +9,18 @@
 .turfHeading {
     text-align: center;
     padding-bottom: inherit;
+}
+
+.turfCard {
+    height: 500px;
+}
+
+.frontBox {
+    height: 500px;
+}
+
+.backBox {
+    height: 500px;
 }
 
 .selected {
