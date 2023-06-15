@@ -1,7 +1,6 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import { Box, Flex, Button, Menu, MenuButton, MenuList, MenuItem, Text } from "@chakra-ui/react";
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { useState, useEffect, useRef } from "react";
 
 function TableComponent({props}) {
 
@@ -9,12 +8,12 @@ function TableComponent({props}) {
     const morningMomentum=[8,9,10,11,12,13,14,15];
     const eveningEnergisers=[16,17,18,19,20,21,22,23];
     function FromTo({row,tod,time}) {
-        console.log(props.dummyTable[row].noon)
+        console.log(props.sportsRows[row].noon)
 
         const handleChangeTime = ({item,during}) => {
-            const updatedDummyTable = { ...props.dummyTable };
-            updatedDummyTable[row][time][during]=item;
-            props.setDummyTable(updatedDummyTable)
+            const updatedsportsRows = { ...props.sportsRows };
+            updatedsportsRows[row][time][during]=item;
+            props.setSportsRows(updatedsportsRows)
         };
 
         return (
@@ -22,7 +21,7 @@ function TableComponent({props}) {
             <Flex justifyContent="space-between" height="100%">
                 <Menu>
                     <MenuButton as={Button} width="50%" backgroundColor="transparent" borderWidth="1px" borderColor="black" padding="0" boxSizing="border-box" rightIcon={<ChevronDownIcon />}>
-                        {props.dummyTable[row][time]["from"] ? props.dummyTable[row][time]["from"] : "From"}
+                        {props.sportsRows[row][time]["from"] ? props.sportsRows[row][time]["from"] : "From"}
                     </MenuButton>
                     <MenuList minWidth="auto">
                         <Box maxHeight="20vh" overflowY="auto">
@@ -36,12 +35,12 @@ function TableComponent({props}) {
 
                 <Menu>
                     <MenuButton as={Button} width="50%" backgroundColor="transparent" borderWidth="1px" borderColor="black" padding="0" boxSizing="border-box" rightIcon={<ChevronDownIcon />}>
-                        {props.dummyTable[row][time]["to"]  ? props.dummyTable[row][time]["to"]  : "To"}
+                        {props.sportsRows[row][time]["to"]  ? props.sportsRows[row][time]["to"]  : "To"}
                     </MenuButton>
                     <MenuList minWidth="auto">
                         <Box maxHeight="20vh" overflowY="auto">
 
-                            {tod.slice(tod.indexOf(props.dummyTable[row][time]["from"] + 1)).map((item, index) => (
+                            {tod.slice(tod.indexOf(props.sportsRows[row][time]["from"] + 1)).map((item, index) => (
                                 <MenuItem key={index} onClick={() => { handleChangeTime({ item: item, during: "to" })}}>{item}</MenuItem>
                             ))}
                         </Box>
@@ -63,7 +62,7 @@ function TableComponent({props}) {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {Object.keys(props.dummyTable).map((row,index) => (
+                    {Object.keys(props.sportsRows).map((row,index) => (
                         <Tr key={index}>
                             <Td>{row}</Td>
                             <Td>

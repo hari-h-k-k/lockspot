@@ -87,30 +87,27 @@ def create_tables():
             FOREIGN KEY (turf_id) REFERENCES turfs(id),
             FOREIGN KEY (user_id) REFERENCES users(id)
         )''',
-        '''CREATE TABLE IF NOT EXISTS bookings (
+        '''CREATE TABLE IF NOT EXISTS timings(
             id INT AUTO_INCREMENT PRIMARY KEY,
             turf_id INT,
-            sport_id INT,
-            booking DATE,
-            start_time INT,
-            date_time INT,
-            FOREIGN KEY (turf_id) REFERENCES turfs(id),
-            FOREIGN KEY (sport_id) REFERENCES sports(id)
-        )''',
-        '''CREATE TABLE IF NOT EXISTS slots (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            turf_id INT,
-            sport_id INT,
+            sport_name VARCHAR(255),
             start_time INT,
             end_time INT,
-            FOREIGN KEY (turf_id) REFERENCES turfs(id),
-            FOREIGN KEY (sport_id) REFERENCES sports(id)
+            FOREIGN KEY (turf_id) REFERENCES turfs(id)
+        )''',
+        '''CREATE TABLE IF NOT EXISTS bookings(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            turf_id INT,
+            sport_name VARCHAR(255),
+            date DATE,
+            slot INT,
+            FOREIGN KEY (turf_id) REFERENCES turfs(id)
         )'''
     ]
 
     for query in table_queries:
         cursor.execute(query)
-
+# FOREIGN KEY (sport_id) REFERENCES sports(id)
     db.commit()
     cursor.close()
     db.close()
@@ -194,30 +191,30 @@ def insert_dummy_data():
         insert_review_query = 'INSERT INTO reviews (review, turf_id, user_id) VALUES (%s, %s, %s)'
         cursor.executemany(insert_review_query, review_data)
 
-    cursor.execute('SELECT COUNT(*) FROM slots')
-    slots_count = cursor.fetchone()[0]
+    cursor.execute('SELECT COUNT(*) FROM timings')
+    timings_count = cursor.fetchone()[0]
 
-    if slots_count == 0:
-        slots_data = [
-            (1, 1, 1, 10, 14),
-            (2, 1, 2, 16, 20),
-            (3, 1, 3, 11, 13)
+    if timings_count == 0:
+        timings_data = [
+            (1, 1, "Football", 10, 14),
+            (2, 1, "Basketball", 16, 20),
+            (3, 1, "Tennis", 11, 13)
         ]
-        insert_slots_query = 'INSERT INTO slots (id, turf_id, sport_id, start_time, end_time) VALUES (%s, %s, %s, %s, %s)'
-        cursor.executemany(insert_slots_query, slots_data)
+        insert_timings_query = 'INSERT INTO timings (id, turf_id, sport_name, start_time, end_time) VALUES (%s, %s, %s, %s, %s)'
+        cursor.executemany(insert_timings_query, timings_data)
 
     cursor.execute('SELECT COUNT(*) FROM bookings')
     bookings_count = cursor.fetchone()[0]
 
     if bookings_count == 0:
         bookings_data = [
-            (1, 1, 1, '2023-06-12', 10, 11),
-            (2, 1, 2, '2023-06-13', 16, 17),
-            (3, 1, 3, '2023-06-14', 12, 13),
-            (4, 1, 1, '2023-06-15', 13, 14),
-            (5, 1, 2, '2023-06-16', 19, 20)
+            (1, "Football", '2023-06-12', 10),
+            (1, "Basketball", '2023-06-13', 16),
+            (1, "Tennis", '2023-06-14', 12),
+            (1, "Football", '2023-06-15', 13),
+            (1, "Basketball", '2023-06-16', 19)
         ]
-        insert_bookings_query = 'INSERT INTO bookings (id, turf_id, sport_id, booking, start_time, date_time) VALUES (%s, %s, %s, %s, %s, %s)'
+        insert_bookings_query = 'INSERT INTO bookings (turf_id, sport_name, date, slot) VALUES (%s, %s, %s, %s)'
         cursor.executemany(insert_bookings_query, bookings_data)
 
     db.commit()
@@ -347,30 +344,33 @@ def addVenue():
     owner_id = request.form.get('ownerId')
     turf_name = request.form.get('turfName')
     location = request.form.get('location')
-    sports = json.loads(request.form.get('sports'))
+    sportsTimings = json.loads(request.form.get('sports'))
+    sports = list(sportsTimings.keys())
     image = request.files['coverImage']
 
     db = get_db()
     cursor = db.cursor()
-
     try:
-        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image, created_at) VALUES (%s, %s, ' \
-                            '%s, %s, %s) '
-        insert_turf_values = (turf_name, owner_id, location, image.read(), '2023-06-05 10:00:00',)
+        
+        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image) VALUES ( %s, %s, %s, %s)'
+        insert_turf_values = (turf_name, owner_id, location, image.read(),)
         cursor.execute(insert_turf_query, insert_turf_values)
-
         db.commit()
         cursor.execute("SELECT LAST_INSERT_ID()")
         turf_id = cursor.fetchone()[0]
-
         for sport in sports:
-            cursor.execute('SELECT id FROM sports WHERE id = %s', (sport['id'],))
+            cursor.execute('SELECT id FROM sports WHERE name = %s', (sport,))
             sport_id = cursor.fetchone()[0]
 
             insert_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
             insert_sports_values = (turf_id, sport_id,)
             cursor.execute(insert_sports_query, insert_sports_values)
-
+        for sport_name in sportsTimings:
+            for tod in sportsTimings[sport_name]: 
+                if((sportsTimings[sport_name][tod]['from']) and (sportsTimings[sport_name][tod]['to'])):
+                    add_timings_query = 'INSERT INTO timings (turf_id, sport_name, start_time, end_time) VALUES (%s, %s, %s, %s)'
+                    add_timings_values = [turf_id, sport_name, sportsTimings[sport_name][tod]['from'], sportsTimings[sport_name][tod]['to']]
+                    cursor.execute(add_timings_query, add_timings_values)
         db.commit()
         return jsonify({'message': 'Added venue successfully'})
 
@@ -491,18 +491,39 @@ def getOwnerVenues():
 
 @app.route('/getTurfDetails', methods=['GET'])
 def getTurfDetails():
+
     venue_id = request.args.get('venueId')
     print(venue_id)
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT slots.turf_id, sports.name, bookings.booking as date, slots.start_time, slots.end_time, "
-        "bookings.start_time AS slot_start FROM bookings JOIN slots ON bookings.sport_id = slots.sport_id JOIN sports "
-        "ON slots.sport_id = sports.id WHERE slots.turf_id = %s",
+        "SELECT timings.turf_id, bookings.sport_name, bookings.date AS date, timings.start_time, timings.end_time, "
+        "bookings.start_time AS slot_start FROM bookings JOIN timings ON bookings.sport_name = timings.sport_name WHERE timings.turf_id = %s",
         (venue_id,)
     )
+    bookings = cursor.fetchall()
+    # print(bookings)
 
+    cursor.execute(
+        "SELECT turf_id, sport_name, start_time, end_time FROM timings WHERE turf_id = %s",
+        (venue_id,)
+    )
     timings = cursor.fetchall()
+
+    # timing_sorted={}
+    # for row in timings:
+    #     st=row[2]
+    #     ed=row[3]
+    #     if(row[1] in timing_sorted):
+    #         for i in range(st,ed):
+    #             if not(i in timing_sorted[row[1]]):
+    #                 timing_sorted[row[1]].append(i)
+    #     else:
+    #         timing_sorted[row[1]]=[]
+    #         for i in range(st,ed):
+    #             timing_sorted[row[1]].append(i)
+    # print(timing_sorted)
+
     cursor.close()
     db.close()
     merged_data = {}

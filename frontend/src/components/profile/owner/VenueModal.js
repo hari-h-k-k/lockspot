@@ -13,20 +13,18 @@ import {
 } from "@chakra-ui/react";
 import { Select, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import {useQuery} from 'react-query';
 import axiosInstance from '../../../Interceptor.js';
+import SportsTable from "./AddSportsTimings.js";
+
 import {
     Input,
     Stack,
     useToast
 } from "@chakra-ui/react";
 import { useState, useEffect, useRef } from "react";
-import {useSelector } from 'react-redux';
-
+import { useSelector} from 'react-redux';
 function VenueModal({ setIsOpen }) {
-
     const userDetails = useSelector(state => state.user);
-
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
     const [overview, setOverview] = useState("");
@@ -34,7 +32,11 @@ function VenueModal({ setIsOpen }) {
     const fileInputRef = useRef(null);
     const [selectedSports, setSelectedSports] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
-    // sportsList?sportsList:[{id:"1",name:"dummy"}]
+
+    const [sports, setSports] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [sportsRows,setSportsRows] = useState({});
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setSelectedImage(file);
@@ -48,28 +50,60 @@ function VenueModal({ setIsOpen }) {
         setIsOpen(false);
     };
 
+    const handlePerv = () => {
+        setCurrentIndex(currentIndex - 1);
+    };
+
+    const handleNext = () => {
+        setCurrentIndex(currentIndex + 1);
+    };
+
     useEffect(() => {
         const getSportsList = async () => {
-          try {
-            const response = await axiosInstance({
-                method: 'get',
-                url: '/getSports',
-            });
-            setAvailableOptions(response.data);
-          } catch (error) {
-            console.error(error);
-          }
+            try {
+                const response = await axiosInstance({
+                    method: 'get',
+                    url: '/getSports',
+                });
+                setAvailableOptions(response.data);
+                
+            } catch (error) {
+                console.error(error);
+            }
         };
         getSportsList();
-      }, []);
-    
+    }, []);
+
+
     const handleSportSelect = (option) => {
+        const sport={};
+        sport[option.name]={
+            "day": {
+                "from": null,
+                "to": null
+            },
+            "noon": {
+                "from": null,
+                "to": null
+            },
+            "night": {
+                "from": null,
+                "to": null
+            }};
+        setSportsRows(sportsRows => ({
+            ...sportsRows,
+            ...sport
+          }));
         setSelectedSports([...selectedSports, option]);
         setAvailableOptions(availableOptions.filter((item) => item !== option));
 
     };
 
     const handleRemoveOption = (option) => {
+        const fieldName = option.name;
+        const obj=sportsRows;
+        delete obj[fieldName];
+        setSportsRows(obj);
         setSelectedSports(selectedSports.filter((sport) => sport !== option));
         setAvailableOptions([...availableOptions, option]);
     };
@@ -87,12 +121,12 @@ function VenueModal({ setIsOpen }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         const payload = {
             ownerId: userDetails.userId,
             turfName: name,
             location: location,
-            sports: JSON.stringify(selectedSports),
+            sports: JSON.stringify(sportsRows),
             coverImage: selectedImage
         };
         console.log(JSON.stringify(payload));
@@ -118,23 +152,17 @@ function VenueModal({ setIsOpen }) {
 
     };
 
+    
     return (
         <>
 
             <ModalHeader>Add Venue</ModalHeader>
             <ModalCloseButton />
 
-            <ModalBody>
+            {(currentIndex == 0) ? <ModalBody>
                 <Stack spacing={4}>
                     <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
                     <Input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-                    {/* <Input placeholder="Overview" value={overview} onChange={(e) => setOverview(e.target.value)} /> */}
-                    {/* <Box>
-                        <Input type="file" accept="image/*" onChange={handleImageChange} />
-                        {selectedImage && (
-                            <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
-                        )}
-                    </Box> */}
 
                     <Box p={4} borderWidth="1px" borderRadius="md" width="300px">
                         <VStack spacing={4} align="stretch">
@@ -195,18 +223,24 @@ function VenueModal({ setIsOpen }) {
                         </Box>
                     )}
                 </Stack>
-            </ModalBody>
-
+            </ModalBody> : <SportsTable props={{sportsRows:sportsRows, setSportsRows:setSportsRows}}/>}
             <ModalFooter>
-                <Button colorScheme="red" mr={3} onClick={handleClose}>
-                    Back
-                </Button>
-                <Button colorScheme="teal" onClick={handleSubmit}>Submit</Button>
+                {(currentIndex == 0)
+                    ? <Button colorScheme="red" mr={3} onClick={handleClose}>
+                        Close
+                    </Button>
+                    : <Button colorScheme="red" mr={3} onClick={handlePerv}>
+                        Previous
+                    </Button>
+                }
+                {(currentIndex == 0)
+                    ? <Button colorScheme="teal" onClick={handleNext}>Next</Button>
+                    : <Button colorScheme="green" onClick={handleSubmit}>Submit</Button>
+                }
             </ModalFooter>
         </>
 
     );
 
-}
-
+};
 export default VenueModal;
