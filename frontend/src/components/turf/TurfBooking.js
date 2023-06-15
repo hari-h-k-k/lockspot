@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 import {
     Box,
     Button,
@@ -24,8 +24,8 @@ import defaultCoverImg from "../../assets/images/Thumbnail1.avif";
 import NavBar from "../navigation/Navbar";
 import "./Turf.css"
 import axiosInstance from "../../Interceptor";
-import {useQuery} from "react-query";
-import {useLocation} from "react-router-dom";
+import { useQuery } from "react-query";
+import { useLocation } from "react-router-dom";
 
 function TurfBooking() {
 
@@ -33,8 +33,9 @@ function TurfBooking() {
     const [displayData, setDisplayData] = React.useState(null)
     const [selectedSport, setSelectedSport] = React.useState()
     const [selectedDay, setSelectedDay] = React.useState()
+    const [isDrawer, setIsDrawer] = React.useState(false)
     const UIRef = useRef(null);
-    const {onClose} = useDisclosure()
+    const { onClose } = useDisclosure();
 
     const location = useLocation();
     const turfKey = location.state?.turfKey;
@@ -97,14 +98,14 @@ function TurfBooking() {
             transformedData[keys.at(i)] = {};
 
             for (let j = 0; j < displayedDays.length; j++) {
-                let date = weekDates[j].toLocaleString('en-UK', {day: '2-digit', month: '2-digit'})
+                let date = weekDates[j].toLocaleString('en-UK', { day: '2-digit', month: '2-digit' })
 
                 transformedData[keys[i]][`${displayedDays[j]} ${date}`] = {
                     timings: collectedData[keys[i]]['timings'],
                     slots: {}
                 };
 
-                const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
+                const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
                 const formattedDate = weekDates[j].toLocaleDateString('en-CA', options);
 
                 if (collectedData[keys[i]][formattedDate] !== null) {
@@ -123,7 +124,7 @@ function TurfBooking() {
         }
 
         const selectedTab = displayedDays[0];
-        const date = weekDates[0].toLocaleString('en-UK', {day: '2-digit', month: '2-digit'})
+        const date = weekDates[0].toLocaleString('en-UK', { day: '2-digit', month: '2-digit' })
 
         setDisplayData(transformedData)
         console.log(transformedData)
@@ -147,8 +148,16 @@ function TurfBooking() {
     };
 
     const [selectedSlots, setSelectedSlots] = React.useState(null)
-    const handleButtonClick = (timingValue, selectedDay, selectedSport) => {
 
+    useEffect(() => {
+        const totalLength = Object.keys(selectedSlots).reduce((length, key) => {
+            return length + Object.keys(selectedSlots[key]).length;
+        }, 0);
+        if (totalLength == 0) {
+            setIsDrawer(false)
+        }
+    }, [selectedSlots]);
+    const handleButtonClick = (timingValue, selectedDay, selectedSport) => {
         const selectedDayFirstWord = selectedDay.split(' ')[0];
         const selectedIndex = displayedDays.findIndex((day) => day.startsWith(selectedDayFirstWord));
         const fullDate = weekDates[selectedIndex].toLocaleString('en-UK', {
@@ -160,7 +169,7 @@ function TurfBooking() {
         console.log(selectedSport, timingValue, fullDate);
 
         setSelectedSlots((prevSelectedSlots) => {
-            const newSelectedSlots = {...prevSelectedSlots};
+            const newSelectedSlots = { ...prevSelectedSlots };
 
             if (!newSelectedSlots[selectedSport]) {
                 newSelectedSlots[selectedSport] = {};
@@ -170,11 +179,14 @@ function TurfBooking() {
                 newSelectedSlots[selectedSport][fullDate] = [];
             }
 
-            newSelectedSlots[selectedSport][fullDate].push(timingValue);
+            if (!newSelectedSlots[selectedSport][fullDate].includes(timingValue)) {
+                newSelectedSlots[selectedSport][fullDate].push(timingValue);
+            }
 
             return newSelectedSlots;
         });
     };
+
 
     const onOpen = () => {
         UIRef.current.focus();
@@ -182,7 +194,7 @@ function TurfBooking() {
 
     const handleRemoveSlot = (selectedSport, fullDate, timingValue) => {
         setSelectedSlots((prevSelectedSlots) => {
-            const newSelectedSlots = {...prevSelectedSlots};
+            const newSelectedSlots = { ...prevSelectedSlots };
 
             if (
                 newSelectedSlots[selectedSport] &&
@@ -211,15 +223,15 @@ function TurfBooking() {
     return (
         <>
             <div style={detailStyles.detailsDiv}>
-                <NavBar/>
+                <NavBar />
                 <Box style={detailStyles.thumbnail}>
-                <Image
-                    src={turf.coverImage?`data:image/jpeg;base64,${turf.coverImage}`:defaultCoverImg}
-                    alt="Image"
-                    height="100%"
-                    width="100%"
-                    objectFit="cover"
-                />
+                    <Image
+                        src={turf.coverImage ? `data:image/jpeg;base64,${turf.coverImage}` : defaultCoverImg}
+                        alt="Image"
+                        height="100%"
+                        width="100%"
+                        objectFit="cover"
+                    />
                 </Box>
                 <div style={detailStyles.headingDiv}></div>
 
@@ -235,7 +247,7 @@ function TurfBooking() {
                                 <Tab
                                     key={index}
                                     className={`${displayedDays[index] === selectedDay ? 'selected ' : 'dayTab'}`}
-                                    style={{fontSize: selectedDay === displayedDays[index] ? '1.2em' : '1em'}}
+                                    style={{ fontSize: selectedDay === displayedDays[index] ? '1.2em' : '1em' }}
                                 >
                                     {isToday ? 'Today' : `${day} ${date}`}
                                 </Tab>
@@ -245,7 +257,7 @@ function TurfBooking() {
 
                 </Tabs>
 
-                <Container sx={{width: "70%", float: "right", height: "60vh"}} maxW="container.xl" p="2rem">
+                <Container sx={{ width: "70%", float: "right", height: "60vh" }} maxW="container.xl" p="2rem">
                     <div className="dropdown">
                         <Select value={selectedSport} onChange={(e) => setSelectedSport(e.target.value)}>
                             {displayData &&
@@ -256,7 +268,7 @@ function TurfBooking() {
                                 ))}
                         </Select>
                     </div>
-                    <Heading sx={{textAlign: "left", marginBlock: "30px"}}>Timings</Heading>
+                    <Heading sx={{ textAlign: "left", marginBlock: "30px" }}>Timings</Heading>
 
                     <Grid sx={gridLayout}>
                         {displayData &&
@@ -271,26 +283,39 @@ function TurfBooking() {
                                 } else {
                                     return (
                                         <Button key={timingValue} className="timing"
-                                                onClick={() => handleButtonClick(timingValue, selectedDay, selectedSport)}>
+                                            onClick={() => handleButtonClick(timingValue, selectedDay, selectedSport)}>
                                             {timingValue} - {timingValue + 1}
                                         </Button>
                                     );
                                 }
                             })}
                     </Grid>
+                    <Button
+                        colorScheme="red"
+                        onClick={() => setIsDrawer(true)}>
+                        Checkout
+                    </Button>
                 </Container>
-                <Drawer placement="bottom" onClose={onClose} isOpen={selectedSlots !== null} trapFocus={false}
-                        finalFocusRef={UIRef} onOpen={onOpen}>
-                    <DrawerOverlay/>
+                <Drawer placement="bottom" onClose={onClose} isOpen={isDrawer} trapFocus={false}
+                    finalFocusRef={UIRef} onOpen={onOpen}>
+                    <DrawerOverlay />
                     <DrawerContent>
-                        <DrawerHeader borderBottomWidth="1px">Basic Drawer</DrawerHeader>
+                        <DrawerHeader borderBottomWidth="1px">
+                            <Flex justifyContent="space-between" alignItems="center">
+                                <span>Cart</span>
+                                <Button colorScheme="red" onClick={() => setIsDrawer(false)}>
+                                    Close
+                                </Button>
+                            </Flex>
+                        </DrawerHeader>
+
                         <DrawerBody>
                             {selectedSlots &&
                                 Object.entries(selectedSlots).map(([selectedSport, sportData]) => (
                                     Object.entries(sportData).map(([fullDate, timingValues]) => (
                                         timingValues.map((timingValue, index) => (
                                             <Flex key={index} alignItems="center" justifyContent="space-between"
-                                                  marginBottom="1rem">
+                                                marginBottom="1rem">
                                                 <Box>
                                                     <Text>{selectedSport}</Text>
                                                     <Text>{fullDate}</Text>
@@ -362,6 +387,6 @@ const detailStyles = {
     menuButton: {
         colorScheme: 'teal',
         mr: 2,
-        _hover: {bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)'},
+        _hover: { bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' },
     }
 };
