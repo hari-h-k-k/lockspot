@@ -1,19 +1,21 @@
 import React from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import NavBar from '../navigation/Navbar.js';
 import MapImg from "../../assets/images/Gmap.png";
 import BgImg from '../../assets/images/ProfileBg.jpg';
+import defaultCoverImg from "../../assets/images/Thumbnail1.avif";
 
-import {Box, Button, Flex, Tab, TabList, TabPanel, TabPanels, Tabs, Text} from '@chakra-ui/react';
+import { Box, Button, Flex, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Image } from '@chakra-ui/react';
 
 const TurfOverview = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const turfKey = location.state?.turfKey; // Access the turfKey from location.state
+    const turf = location.state?.turf;
     return (
         <div style={detailStyles.detailsDiv}>
 
-            <NavBar/>
+            <NavBar />
 
             <Box
                 height="20vh"
@@ -25,21 +27,27 @@ const TurfOverview = () => {
                 backgroundSize="cover"
                 overflow="auto"
             >
-
+                <Image
+                    src={turf.coverImage?`data:image/jpeg;base64,${turf.coverImage}`:defaultCoverImg}
+                    alt="Image"
+                    height="100%"
+                    width="100%"
+                    objectFit="cover"
+                />
             </Box>
             <div style={detailStyles.mapDiv}>
                 {/* Your div content */}
 
                 <Flex justifyContent="flex-end" alignItems="flex-end" mt={10}>
-                    <Button {...detailStyles.mapButton} onClick={()=>{navigate('/showOnMap')}}>Show on Map</Button>
-                    <Button {...detailStyles.mapButton} onClick={() => navigate('/turfBooking', {state: {turfKey}})}>Book
+                    <Button {...detailStyles.mapButton} onClick={() => { navigate('/showOnMap') }}>Show on Map</Button>
+                    <Button {...detailStyles.mapButton} onClick={() => navigate('/turfBooking', { state: { turfKey, turf } })}>Book
                         Now</Button>
                 </Flex>
             </div>
 
-            <Box p={4} sx={{width: "70%", float: "right"}}>
-                <Text mr={4} mt={4} sx={{textAlignLast: "center"}}>
-                    Venue Name
+            <Box p={4} sx={{ width: "70%", float: "right" }}>
+                <Text mr={4} mt={4} sx={{ textAlignLast: "center" }}>
+                    {turf.name}
                 </Text>
 
                 <Tabs isLazy isFitted variant="enclosed" mt={4}>
@@ -104,6 +112,6 @@ const detailStyles = {
     menuButton: {
         colorScheme: 'teal',
         mr: 2,
-        _hover: {bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)'},
+        _hover: { bg: 'black', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' },
     }
 };
