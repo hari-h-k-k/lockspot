@@ -1,0 +1,30 @@
+version: "2"
+services:
+  react:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - flask
+    command: npm start
+
+  flask:
+    build:
+      context: ./backend/flask
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    command: sh -c "sleep 20s ; python main.py"
+
+  mysql:
+    build:
+      context: ./backend/sql
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
