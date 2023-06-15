@@ -196,11 +196,12 @@ def insert_dummy_data():
 
     if timings_count == 0:
         timings_data = [
-            (1, 1, "Football", 10, 14),
-            (2, 1, "Basketball", 16, 20),
-            (3, 1, "Tennis", 11, 13)
+            (1, "Football", 5, 9),
+            (1, "Football", 12, 18),
+            (1, "Basketball", 16, 20),
+            (1, "Tennis", 11, 13)
         ]
-        insert_timings_query = 'INSERT INTO timings (id, turf_id, sport_name, start_time, end_time) VALUES (%s, %s, %s, %s, %s)'
+        insert_timings_query = 'INSERT INTO timings (turf_id, sport_name, start_time, end_time) VALUES (%s, %s, %s, %s)'
         cursor.executemany(insert_timings_query, timings_data)
 
     cursor.execute('SELECT COUNT(*) FROM bookings')
@@ -497,58 +498,38 @@ def getTurfDetails():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT timings.turf_id, bookings.sport_name, bookings.date AS date, timings.start_time, timings.end_time, "
-        "bookings.start_time AS slot_start FROM bookings JOIN timings ON bookings.sport_name = timings.sport_name WHERE timings.turf_id = %s",
-        (venue_id,)
-    )
-    bookings = cursor.fetchall()
-    # print(bookings)
-
-    cursor.execute(
-        "SELECT turf_id, sport_name, start_time, end_time FROM timings WHERE turf_id = %s",
+        "SELECT timings.turf_id, timings.sport_name, bookings.date AS date, timings.start_time, timings.end_time, "
+        "bookings.slot FROM bookings RIGHT JOIN timings ON bookings.sport_name = timings.sport_name AND "
+        "bookings.turf_id = timings.turf_id WHERE timings.turf_id = %s",
         (venue_id,)
     )
     timings = cursor.fetchall()
-
-    # timing_sorted={}
-    # for row in timings:
-    #     st=row[2]
-    #     ed=row[3]
-    #     if(row[1] in timing_sorted):
-    #         for i in range(st,ed):
-    #             if not(i in timing_sorted[row[1]]):
-    #                 timing_sorted[row[1]].append(i)
-    #     else:
-    #         timing_sorted[row[1]]=[]
-    #         for i in range(st,ed):
-    #             timing_sorted[row[1]].append(i)
-    # print(timing_sorted)
-
     cursor.close()
     db.close()
     merged_data = {}
 
     for time in timings:
         sport_name = time[1]
-        date = str(time[2])
+        date = str(time[2]) if time[2] is not None else None
         start_time = time[3]
         end_time = time[4]
-        slot_start = time[5]
+        slot_start = time[5] if time[5] is not None else None
 
         if sport_name not in merged_data:
             merged_data[sport_name] = {
-                "timings": set(),
+                "timings": [],
             }
 
-        merged_data[sport_name]["timings"].update(range(start_time, end_time))
+        merged_data[sport_name]["timings"].extend(range(start_time, end_time))
 
-        if date not in merged_data[sport_name]:
-            merged_data[sport_name][date] = [slot_start]
-        else:
-            merged_data[sport_name][date].append(slot_start)
+        if date is not None:
+            if date not in merged_data[sport_name]:
+                merged_data[sport_name][date] = []
+            if slot_start is not None and slot_start not in merged_data[sport_name][date]:
+                merged_data[sport_name][date].append(slot_start)
 
     for sport_data in merged_data.values():
-        sport_data["timings"] = sorted(sport_data["timings"])
+        sport_data["timings"] = sorted(set(sport_data["timings"]))
 
     merged_data_str = json.dumps(merged_data)
 
