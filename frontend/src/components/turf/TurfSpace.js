@@ -31,7 +31,7 @@ function TurfSpace({turfLocation}) {
         data: turfList,
     } = useQuery(['getTurf', turfLocation], getTurfList);
 
-    const handleCardClick = (turfKey) => {
+    const handleCardClick = (turfKey, turf) => {
         if (!userDetails.token) {
             toast({
                 title: "Log in Status",
@@ -42,7 +42,7 @@ function TurfSpace({turfLocation}) {
             });
         } else {
             console.log("Clicked on", turfKey)
-            navigate('/turfDetails', { state: { turfKey } });
+            navigate('/turfDetails', { state: { turfKey, turf  } });
         }
     };
 
@@ -61,7 +61,7 @@ function TurfSpace({turfLocation}) {
                         {Object.keys(turfList).map((key) => {
                             const turf = turfList[key];
                             return (
-                                <TurfCard venue={turf} handleCardClick={handleCardClick}/>
+                                <TurfCard venue={turf} handleCardClick={() => handleCardClick(key, turf)}/>
                             );
                         })}
 

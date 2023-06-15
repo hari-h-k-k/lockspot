@@ -16,9 +16,11 @@ import {
     TabList,
     Tabs,
     Text,
-    useDisclosure
+    useDisclosure,
+    Image
 } from "@chakra-ui/react";
 import BgImg from "../../assets/images/ProfileBg.jpg";
+import defaultCoverImg from "../../assets/images/Thumbnail1.avif";
 import NavBar from "../navigation/Navbar";
 import "./Turf.css"
 import axiosInstance from "../../Interceptor";
@@ -36,6 +38,7 @@ function TurfBooking() {
 
     const location = useLocation();
     const turfKey = location.state?.turfKey;
+    const turf = location.state?.turf;
     const getTurfDetails = async () => {
         const response = await axiosInstance({
             method: 'get',
@@ -209,7 +212,15 @@ function TurfBooking() {
         <>
             <div style={detailStyles.detailsDiv}>
                 <NavBar/>
-                <Box style={detailStyles.thumbnail}></Box>
+                <Box style={detailStyles.thumbnail}>
+                <Image
+                    src={turf.coverImage?`data:image/jpeg;base64,${turf.coverImage}`:defaultCoverImg}
+                    alt="Image"
+                    height="100%"
+                    width="100%"
+                    objectFit="cover"
+                />
+                </Box>
                 <div style={detailStyles.headingDiv}></div>
 
                 <Tabs isLazy isFitted variant="enclosed" onChange={handleTabChange}>
