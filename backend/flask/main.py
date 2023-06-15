@@ -85,12 +85,30 @@ def create_tables():
             user_id INT,
             FOREIGN KEY (turf_id) REFERENCES turfs(id),
             FOREIGN KEY (user_id) REFERENCES users(id)
+        )''',
+        '''CREATE TABLE IF NOT EXISTS timings(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            turf_id INT,
+            sport_name VARCHAR(255),
+            start_time INT,
+            end_time INT,
+            FOREIGN KEY (turf_id) REFERENCES turfs(id)
+        )''',
+        '''CREATE TABLE IF NOT EXISTS bookings(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            turf_id INT,
+            sport_id INT,
+            date DATE,
+            start_time INT,
+            end_time INT,
+            FOREIGN KEY (turf_id) REFERENCES turfs(id),
+            FOREIGN KEY (sport_id) REFERENCES sports(id)
         )'''
     ]
 
     for query in table_queries:
         cursor.execute(query)
-
+# FOREIGN KEY (sport_id) REFERENCES sports(id)
     db.commit()
     cursor.close()
     db.close()
@@ -291,30 +309,32 @@ def addVenue():
     owner_id = request.form.get('ownerId')
     turf_name = request.form.get('turfName')
     location = request.form.get('location')
-    sports = json.loads(request.form.get('sports'))
+    sportsTimings = json.loads(request.form.get('sports'))
+    sports = list(sportsTimings.keys())
     image = request.files['coverImage']
 
     db = get_db()
     cursor = db.cursor()
-
     try:
-        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image, created_at) VALUES (%s, %s, ' \
-                            '%s, %s, %s) '
-        insert_turf_values = (turf_name, owner_id, location, image.read(), '2023-06-05 10:00:00',)
+        
+        insert_turf_query = 'INSERT INTO turfs (name, owner_id, location, cover_image) VALUES ( %s, %s, %s, %s)'
+        insert_turf_values = (turf_name, owner_id, location, image.read(),)
         cursor.execute(insert_turf_query, insert_turf_values)
-
         db.commit()
         cursor.execute("SELECT LAST_INSERT_ID()")
         turf_id = cursor.fetchone()[0]
-
         for sport in sports:
-            cursor.execute('SELECT id FROM sports WHERE id = %s', (sport['id'],))
+            cursor.execute('SELECT id FROM sports WHERE name = %s', (sport,))
             sport_id = cursor.fetchone()[0]
 
             insert_sports_query = 'INSERT INTO turf_sports (turf_id, sport_id) VALUES (%s, %s)'
             insert_sports_values = (turf_id, sport_id,)
             cursor.execute(insert_sports_query, insert_sports_values)
-
+        for sport_name in sportsTimings:
+            for tod in sportsTimings[sport_name]:   
+                add_timings_query = 'INSERT INTO timings (turf_id, sport_name, start_time, end_time) VALUES (%s, %s, %s, %s)'
+                add_timings_values = [turf_id, sport_name, sportsTimings[sport_name][tod]['from'], sportsTimings[sport_name][tod]['to']]
+                cursor.execute(add_timings_query, add_timings_values)
         db.commit()
         return jsonify({'message': 'Added venue successfully'})
 
@@ -325,6 +345,43 @@ def addVenue():
     finally:
         cursor.close()
         db.close()
+
+@app.route('/addTimings', methods=['POST'])
+def addTimings():
+    owner_id = request.json.get('ownerId')
+    turf_id = request.json.get('venueId')
+    turf_name = request.json.get('turfName')
+    location = request.json.get('location')
+    # image = request.files['coverImage']
+    sports = request.json.get('sports')
+    # for i in sports:
+    #     print(i)
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute('INSERT INTO turfs (name, owner_id, location) VALUES (%s, %s, %s)', (turf_name,owner_id,location,))
+    db.commit()
+    cursor.execute("SELECT LAST_INSERT_ID()")
+    turf_id = cursor.fetchone()[0]
+    for sport_id in sports:
+        for tod in sports[sport_id]:   
+            add_timings_query = 'INSERT INTO timings (turf_id, sport_id, start_time, end_time) VALUES (%s, %s, %s, %s)'
+            add_timings_values = [turf_id, sport_id, tod['startTime'], tod['endTime']]
+            cursor.execute(add_timings_query, add_timings_values)
+    
+    cursor.execute('SELECT * FROM timings WHERE turf_id = %s AND sport_id = %s', (turf_id,1,))
+    sport_times = cursor.fetchall()
+    timing=[]
+    for time in sport_times:
+        temp={
+            "turfId":time[1],
+            "sportId":time[2],
+            "startTime":time[3],
+            "endTime":time[4],
+        }
+        timing.append(temp)
+
+    return json.dumps(timing)
 
 
 @app.route('/updateVenue', methods=['POST'])
