@@ -1,8 +1,18 @@
 version: "2"
 services:
+  react:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - flask
+    command: npm start
+
   flask:
     build:
-      context: ./flask
+      context: ./backend/flask
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
@@ -12,7 +22,7 @@ services:
 
   mysql:
     build:
-      context: ./sql
+      context: ./backend/sql
       dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: root
